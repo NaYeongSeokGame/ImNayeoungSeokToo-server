@@ -1,0 +1,13 @@
+import { Request, Response, NextFunction } from 'express';
+
+/**
+ * 모든 오류를 catch() 처리하고 이를 next() 미들웨어에 전달하는 함수
+ * ErrorHandler 에서 추후에 일괄적으로 오류를 처리할 예정.
+ *
+ * @params 비동기 처리를 진행할 함수 fn
+ */
+
+export const wrapAsync =
+  (fn: any) => (req: Request, res: Response, next: NextFunction) => {
+    return fn(req, res, next).catch(next);
+  };

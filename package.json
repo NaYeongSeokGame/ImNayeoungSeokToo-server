@@ -1,0 +1,44 @@
+{
+  "name": "ImNayeoungSeokToo-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/NaYeongSeokGame/ImNayeoungSeokToo-server.git",
+  "author": "Baik Gwangin <gwangin1999@naver.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon --exec ts-node -r tsconfig-paths/register --files ./src/app.ts",
+    "start": "NODE_ENV=production pm2 start ts-node -- --type-check -r tsconfig-paths/register --files ./src/app.ts"
+  },
+  "dependencies": {
+    "axios": "1.4.0",
+    "cors": "2.8.5",
+    "dotenv": "16.3.1",
+    "express": "4.18.2",
+    "helmet": "7.0.0",
+    "hpp": "0.2.3",
+    "mysql2": "3.4.0",
+    "redis": "4.6.7",
+    "typeorm": "0.3.17"
+  },
+  "devDependencies": {
+    "@types/cors": "2.8.13",
+    "@types/dotenv": "8.2.0",
+    "@types/express": "4.17.17",
+    "@types/hpp": "0.2.2",
+    "@types/node": "20.3.1",
+    "@types/swagger-jsdoc": "6.0.1",
+    "@types/swagger-ui-express": "4.1.3",
+    "class-validator": "0.14.0",
+    "eslint": "8.43.0",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "nodemon": "2.0.22",
+    "prettier": "2.8.8",
+    "swagger-jsdoc": "6.2.8",
+    "swagger-ui-express": "4.6.3",
+    "ts-node": "10.9.1",
+    "tsconfig-paths": "4.1.0",
+    "typescript": "5.1.3"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "es2020",
+    "target": "esNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "./dist",
+    "typeRoots": ["./src/types/index.d.ts", "./node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "@/database/*": ["src/database/*"],
+      "@/routes/*": ["src/routes/*"],
+      "@/auth/*": ["src/auth/*"],
+      "@/constants/*": ["src/constants/*"],
+      "@/errors/*": ["src/errors/*"],
+      "@/utils/*": ["src/utils/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
