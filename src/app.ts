@@ -1,25 +1,17 @@
-import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import { createConnection } from 'typeorm';
-
-import docsRouter from '@/routes/docs';
 
 import { DEV_CONFIG, PROD_CONFIG } from '@/constants/index';
-import typeOrmConfig from '@/database/config/ormconfig';
-import errorHandler from '@/errors/errorHandler';
+import docsRouter from '@/routes/docs';
+import errorHandler from '@/utils/errorHandler';
 
 dotenv.config();
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
 const CURRENT_CONFIG = isProd ? PROD_CONFIG : DEV_CONFIG;
-
-// DB Connection
-createConnection(typeOrmConfig[CURRENT_CONFIG.mode]).then(() => {
-  console.log('Successfully connected to DB.');
-});
 
 const app = express();
 
@@ -44,12 +36,9 @@ app.use(
 
 // Router List
 app.use('/api-docs', docsRouter);
-app.use('/auth', authRouter);
-app.use('/question', questionRouter);
-app.use('/search', searchRouter);
 
 app.get('/', (_, res) => {
-  res.status(200).send('KUAGORA Server has been Enabled.');
+  res.status(200).send('NaYeongSeokGame Server has been Enabled.');
 });
 
 app.listen(CURRENT_CONFIG.port, () => {

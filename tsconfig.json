@@ -1,22 +1,27 @@
 {
   "compilerOptions": {
-    "module": "es2020",
-    "target": "esNext",
+    "module": "CommonJS",
+    "target": "ES5",
     "moduleResolution": "node",
     "strict": true,
     "esModuleInterop": true,
     "outDir": "./dist",
-    "typeRoots": ["./src/types/index.d.ts", "./node_modules/@types"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
-      "@/database/*": ["src/database/*"],
-      "@/routes/*": ["src/routes/*"],
-      "@/auth/*": ["src/auth/*"],
+      "@/configs/*": ["src/configs/*"],
       "@/constants/*": ["src/constants/*"],
-      "@/errors/*": ["src/errors/*"],
-      "@/utils/*": ["src/utils/*"]
+      "@/controllers/*": ["src/controllers/*"],
+      "@/middlewares/*": ["src/middlewares/*"],
+      "@/models/*": ["src/models/*"],
+      "@/routes/*": ["src/routes/*"],
+      "@/services/*": ["src/services/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/validations/*": ["src/validations/*"],
+      "@/type/*": ["src/types/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }
