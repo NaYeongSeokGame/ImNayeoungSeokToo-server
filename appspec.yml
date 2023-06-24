@@ -1,0 +1,17 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/server-build
+    overwrite: yes
+
+permissions:
+  - object: /home/ubuntu/server-build
+    owner: root
+    group: root
+
+hooks:
+  AfterInstall:
+    - location: deploy.sh
+      timeout: 180
+      runas: ubuntu

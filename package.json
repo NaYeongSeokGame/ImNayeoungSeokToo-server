@@ -7,7 +7,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register --files ./src/app.ts",
-    "start": "NODE_ENV=production pm2 start ts-node -- --type-check -r tsconfig-paths/register --files ./src/app.ts"
+    "start": "NODE_ENV=production pm2 start ts-node -- --type-check -r tsconfig-paths/register --files ./src/app.ts",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "prettier": "prettier --write src/**/*.{ts,tsx}"
   },
   "dependencies": {
     "axios": "1.4.0",
