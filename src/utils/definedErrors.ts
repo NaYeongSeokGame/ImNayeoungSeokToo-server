@@ -15,6 +15,7 @@ class BadRequestError extends Error {
     this.message = message;
     Object.setPrototypeOf(this, BadRequestError.prototype);
   }
+
   statusCode = 400;
 }
 
@@ -29,6 +30,7 @@ class UnauthorizedError extends Error {
     this.message = message;
     Object.setPrototypeOf(this, UnauthorizedError.prototype);
   }
+
   statusCode = 401;
 }
 
@@ -43,6 +45,7 @@ class ForbiddenError extends Error {
     this.message = message;
     Object.setPrototypeOf(this, ForbiddenError.prototype);
   }
+
   statusCode = 403;
 }
 
@@ -57,6 +60,7 @@ class NotFoundError extends Error {
     this.message = message;
     Object.setPrototypeOf(this, NotFoundError.prototype);
   }
+
   statusCode = 404;
 }
 
@@ -71,6 +75,7 @@ class InternalServerError extends Error {
     this.message = message;
     Object.setPrototypeOf(this, InternalServerError.prototype);
   }
+
   statusCode = 500;
 }
 

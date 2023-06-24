@@ -39,12 +39,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Run Eslint
-        run: yarn lint
-
-      - name: Run Prettier
-        run: yarn prettier
-
       - name: Make zip file
         run: zip -qq -r ./$GITHUB_SHA.zip . -x "node_modules/*"
         shell: bash

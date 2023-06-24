@@ -1,4 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
+
+type WrapperFunc = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => Promise<Response | void>;
 
 /**
  * 모든 오류를 catch() 처리하고 이를 next() 미들웨어에 전달하는 함수
@@ -8,6 +14,6 @@ import { Request, Response, NextFunction } from 'express';
  */
 
 export const wrapAsync =
-  (fn: any) => (req: Request, res: Response, next: NextFunction) => {
+  (fn: WrapperFunc) => (req: Request, res: Response, next: NextFunction) => {
     return fn(req, res, next).catch(next);
   };

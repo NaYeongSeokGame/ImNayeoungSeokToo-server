@@ -4,31 +4,9 @@
   },
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint", "prettier"],
-  "extends": ["airbnb-base", "prettier"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   "parserOptions": {
-    "ecmaVersion": 2018,
+    "ecmaVersion": "latest",
     "sourceType": "module"
-  },
-  "settings": {
-    "import/extensions": [".js", ".ts"],
-    "import/parsers": {
-      "@typescript-eslint/parser": [".ts"]
-    },
-    "import/resolver": {
-      "node": {
-        "extensions": [".js", ".ts"]
-      }
-    }
-  },
-  "rules": {
-    "import/no-extraneous-dependencies": 0,
-    "import/extensions": 0,
-    "import/no-unresolved": 0,
-    "no-unused-vars": "warn",
-    "lines-between-class-members": [
-      "error",
-      "always",
-      { "exceptAfterSingleLine": true }
-    ]
   }
 }
