@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 
 import { DEV_CONFIG, PROD_CONFIG } from '@/constants/index';
-import docsRouter from '@/routes/docs';
+import router from '@/routes/index';
 import errorHandler from '@/utils/errorHandler';
 
 dotenv.config();
@@ -35,7 +35,7 @@ app.use(
 );
 
 // Router List
-app.use('/api-docs', docsRouter);
+app.use('/api/v1', router);
 
 app.get('/', (_, res) => {
   res.status(200).send('NaYeongSeokGame Server has been Enabled.');
@@ -47,3 +47,4 @@ app.listen(CURRENT_CONFIG.port, () => {
 
 // Error Handler
 app.use(errorHandler);
+app.disable('x-powered-by');

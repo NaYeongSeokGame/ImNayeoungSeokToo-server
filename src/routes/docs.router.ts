@@ -16,11 +16,9 @@ const swaggerOptions = {
         url: 'https://choosealicense.com/licenses/mit/',
       },
     },
-    servers: [
-      { url: 'http://localhost:4000', description: '개발 서버' },
-    ],
+    servers: [{ url: 'http://localhost:4000', description: '개발 서버' }],
   },
-  apis: ['./src/swagger/routes/*', './src/swagger/components/*'],
+  apis: ['./src/docs/routes/*', './src/docs/components/*'],
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);

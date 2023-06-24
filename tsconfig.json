@@ -12,6 +12,7 @@
     "paths": {
       "@/configs/*": ["src/configs/*"],
       "@/constants/*": ["src/constants/*"],
+      "@/docs/*": ["src/docs/*"],
       "@/controllers/*": ["src/controllers/*"],
       "@/middlewares/*": ["src/middlewares/*"],
       "@/models/*": ["src/models/*"],
