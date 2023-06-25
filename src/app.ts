@@ -29,7 +29,8 @@ const initExpressApp = () => {
   // CORS Setting
   app.use(
     cors({
-      origin: isProd ? PROD_CONFIG.baseURL : true,
+      // origin: CURRENT_CONFIG.baseURL,
+      origin: true,
       credentials: true,
     }),
   );
