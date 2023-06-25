@@ -7,6 +7,8 @@ import { errorCatchHandler } from '@/utils/errorCatchHandler';
 const quizRouter = express.Router();
 
 quizRouter.get('/', errorCatchHandler(QuizController.getQuizPreset));
+quizRouter.get('/list', errorCatchHandler(QuizController.getQuizPresetList));
+
 quizRouter.delete('/', errorCatchHandler(QuizController.deleteQuizPreset));
 
 quizRouter.post(

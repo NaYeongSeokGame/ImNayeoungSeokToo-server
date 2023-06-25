@@ -25,6 +25,19 @@ class QuizController {
     return res.status(200).json(presetData);
   }
   /**
+   * 페이지네이션을 기반으로 프리셋 목록을 전달하는 함수 getQuizPresetList
+   */
+  static async getQuizPresetList(req: Request, res: Response) {
+    const { page = '1', limit = '9' } = req.query;
+
+    const presetListData = await ModelQuizPreset.getQuizPreset({
+      page: Number(page),
+      limit: Number(limit),
+    });
+
+    return res.status(200).json(presetListData);
+  }
+  /**
    * 새로운 퀴즈 프리셋을 생성하는 함수 postCreateQuizPreset
    */
   static async postCreateQuizPreset(req: Request, res: Response) {
