@@ -19,12 +19,4 @@ const QuizPreset = new Schema<QuizPresetType>(
   },
 );
 
-// _id 필드를 PIN으로 쓰기 위해 아래와 같이 정의
-QuizPreset.virtual('presetPin').get(function () {
-  return this._id.toString();
-});
-QuizPreset.set('toJSON', {
-  virtuals: true,
-});
-
 export default model<QuizPresetType>('quizPresets', QuizPreset);
