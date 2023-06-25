@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import fs from 'fs';
 import { Types } from 'mongoose';
 
 import ModelQuiz from '@/models/quiz/quiz';
@@ -45,8 +46,6 @@ class QuizController {
   static async postCreateQuizPreset(req: Request, res: Response) {
     const imageFiles = req.files as Express.Multer.File[] | undefined;
 
-    console.log(imageFiles, req.body);
-
     if (!imageFiles || !imageFiles.length)
       throw new BadRequestError('요청으로 보낸 이미지 파일이 없습니다.');
 
@@ -75,6 +74,7 @@ class QuizController {
           answer,
           includedPresetPin: createdQuizPresetPin,
         });
+        fs.unlinkSync(imageFile.path);
       }),
     );
 

@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import express from 'express';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import mongoose from 'mongoose';
 
 import { DEV_CONFIG, PROD_CONFIG } from '@/constants/index';
 import router from '@/routes/index';
