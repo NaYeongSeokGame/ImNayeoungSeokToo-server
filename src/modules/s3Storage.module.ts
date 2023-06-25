@@ -27,17 +27,18 @@ class S3StorageModule {
           'S3 버킷에 파일을 업로드하는 과정에서 문제가 생겼습니다.',
         );
 
-      return `https://${process.env.CLOUDFRONT_URL}/preset/${presetPin}/${fileData.originalname}`;
+      return `${process.env.CLOUDFRONT_URL}/preset/${presetPin}/${fileData.originalname}`;
     } catch (error) {
       console.log(error);
       throw error;
     }
   }
   static async deleteFileFromS3(key: string) {
+    console.log(key.replace(`${process.env.CLOUDFRONT_URL}/`, ''));
     try {
       const params: S3.DeleteObjectRequest = {
         Bucket: process.env.S3_BUCKET_NAME || '',
-        Key: key,
+        Key: key.replace(`${process.env.CLOUDFRONT_URL}/`, ''),
       };
       const result = await s3Storage.deleteObject(params).promise();
       return result;

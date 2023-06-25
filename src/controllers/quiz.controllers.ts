@@ -104,6 +104,8 @@ class QuizController {
       ),
     );
 
+    await ModelQuizPreset.deleteQuizPreset(presetPin as string);
+
     return res.sendStatus(200);
   }
 }

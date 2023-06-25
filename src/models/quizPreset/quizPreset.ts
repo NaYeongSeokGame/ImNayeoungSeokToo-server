@@ -11,15 +11,10 @@ class ModelQuizPreset {
    * @param param.quizList 프리셋에 포함된 퀴즈 목록
    * @returns
    */
-  static async createQuizPreset({
-    isPrivate,
-    title,
-    quizList,
-  }: Partial<QuizPresetType>) {
+  static async createQuizPreset({ isPrivate, title }: Partial<QuizPresetType>) {
     const createdQuizPresetDocs = await model.create({
       isPrivate,
       title,
-      quizList,
     });
     return createdQuizPresetDocs._id.toString();
   }
@@ -64,8 +59,8 @@ class ModelQuizPreset {
     return quizPresetList;
   }
 
-  static async deleteQuizPreset(presetPin: number) {
-    const result = await model.deleteOne({ presetPin }).exec();
+  static async deleteQuizPreset(_id: string) {
+    const result = await model.deleteOne({ _id }).exec();
 
     if (!result.deletedCount)
       throw new BadRequestError('요청하신 PIN 에 해당되는 프리셋이 없습니다');
