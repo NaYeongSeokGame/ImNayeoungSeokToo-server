@@ -39,6 +39,14 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Environment Variable Setting
+        run: |
+          echo "PROD_MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+          echo "S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}" >> .env
+          echo "CLOUDFRONT_URL=${{ secrets.CLOUDFRONT_URL }}" >> .env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+          echo "AWS_SECRET_ACCESS_ID=${{ secrets.AWS_SECRET_ACCESS_ID }}" >> .env
+
       - name: Make zip file
         run: zip -qq -r ./$GITHUB_SHA.zip . -x "node_modules/*"
         shell: bash
