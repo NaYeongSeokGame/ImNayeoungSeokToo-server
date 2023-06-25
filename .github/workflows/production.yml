@@ -39,6 +39,10 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Environment Variable Setting
+        run: |
+          echo "PROD_MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+
       - name: Make zip file
         run: zip -qq -r ./$GITHUB_SHA.zip . -x "node_modules/*"
         shell: bash
