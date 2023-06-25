@@ -1,31 +1,30 @@
 import { Schema, model } from 'mongoose';
 
-import { Quiz } from '@/models/quiz/model';
-import type { QuizType } from '@/models/quiz/model';
-
 /**
  * 프리셋에 포함된 퀴즈 모델
  */
 export interface QuizPresetType {
-  presetPin: number;
   isPrivate: boolean;
   title: string;
-  quizList: QuizType[];
 }
 
 const QuizPreset = new Schema<QuizPresetType>(
   {
     isPrivate: { type: Boolean, required: true, default: false },
     title: { type: String, required: true },
-    quizList: {
-      type: [Quiz],
-      default: [],
-    },
   },
   {
     collection: 'quizPresets',
     timestamps: true,
   },
 );
+
+// _id 필드를 PIN으로 쓰기 위해 아래와 같이 정의
+QuizPreset.virtual('presetPin').get(function () {
+  return this._id.toString();
+});
+QuizPreset.set('toJSON', {
+  virtuals: true,
+});
 
 export default model<QuizPresetType>('quizPresets', QuizPreset);
