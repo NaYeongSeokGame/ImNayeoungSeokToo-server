@@ -15,6 +15,11 @@ dotenv.config();
 const isProd: boolean = process.env.NODE_ENV === 'production';
 const CURRENT_CONFIG = isProd ? PROD_CONFIG : DEV_CONFIG;
 
+// SSL 관련 인증을 Dev 환경에서 무시하기 위해 추가
+if (!isProd) {
+  process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+}
+
 const initExpressApp = () => {
   const app = express();
 
