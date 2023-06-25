@@ -1,7 +1,13 @@
+import { Types } from 'mongoose';
+
 import { BadRequestError } from '@/utils/definedErrors';
 
 import model from './model';
 import type { QuizPresetType } from './model';
+
+type QuizPresetWithPinType = QuizPresetType & {
+  presetPin: string;
+};
 
 class ModelQuizPreset {
   /**
@@ -38,10 +44,21 @@ class ModelQuizPreset {
    */
   static async getQuizPreset({ page, limit }: { page: number; limit: number }) {
     const quizPresetList = await model
-      .find({ isPrivate: false }, { title: 1, presetPin: 1, quizList: 1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean()
+      .aggregate<QuizPresetWithPinType>([
+        {
+          $match: { isPrivate: false },
+        },
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+        {
+          $project: {
+            title: 1,
+            isPrivate: 1,
+            _id: 0,
+            presetPin: '$_id',
+          },
+        },
+      ])
       .exec();
     return quizPresetList;
   }
@@ -51,11 +68,23 @@ class ModelQuizPreset {
    * @param param.page 불러올 페이지
    * @param param.limit 한 페이지 당 불러올 document 수량
    */
-  static async getQuizPresetById(_id: string) {
-    const quizPresetList = await model
-      .findOne({ _id }, { title: 1, presetPin: 1, quizList: 1 })
-      .lean()
+  static async getQuizPresetById(presetPin: string) {
+    const [quizPresetList] = await model
+      .aggregate<QuizPresetWithPinType>([
+        {
+          $match: { _id: new Types.ObjectId(presetPin) },
+        },
+        {
+          $project: {
+            title: 1,
+            isPrivate: 1,
+            _id: 0,
+            presetPin: '$_id',
+          },
+        },
+      ])
       .exec();
+
     return quizPresetList;
   }
 
