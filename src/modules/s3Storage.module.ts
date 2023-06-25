@@ -16,7 +16,7 @@ class S3StorageModule {
 
       const params: S3.PutObjectRequest = {
         Bucket: process.env.S3_BUCKET_NAME || '',
-        Key: `${presetPin}/${fileData.originalname}`,
+        Key: `preset/${presetPin}/${fileData.originalname}`,
         Body: fileContent,
       };
 
