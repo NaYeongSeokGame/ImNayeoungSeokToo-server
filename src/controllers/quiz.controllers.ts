@@ -21,11 +21,12 @@ class QuizController {
       throw new BadRequestError('유효하지 않은 프리셋 PIN 번호입니다.');
 
     const presetData = await ModelQuizPreset.getQuizPresetById(presetPin);
+    const quizList = await ModelQuiz.getQuizListInPreset(presetData.presetPin);
 
     if (!presetData)
       throw new BadRequestError('해당 PIN 번호를 가진 프리셋이 없습니다.');
 
-    return res.status(200).json(presetData);
+    return res.status(200).json({ ...presetData, quizList });
   }
   /**
    * 페이지네이션을 기반으로 프리셋 목록을 전달하는 함수 getQuizPresetList
