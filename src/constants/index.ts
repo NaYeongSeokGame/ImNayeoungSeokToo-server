@@ -7,17 +7,15 @@ export const DEV_CONFIG = {
   port: '4000',
   baseURL: 'http://localhost:3000',
   mongoose: {
-    port: 1337,
-    db: 'mongodb://localhost:27017/rest-api-tutorial',
+    uri: process.env.DEV_MONGO_URI || '',
   },
 } as const;
 
 export const PROD_CONFIG = {
   mode: 'dev',
   port: '8000',
-  baseURL: 'http://nayeongseokgame.app',
+  baseURL: 'http://ec2-43-202-28-155.ap-northeast-2.compute.amazonaws.com/',
   mongoose: {
-    port: 1337,
-    db: 'mongodb://localhost:27017/rest-api-tutorial',
+    uri: process.env.PROD_MONGO_URI || '',
   },
 } as const;
