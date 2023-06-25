@@ -26,14 +26,14 @@ class ModelQuizPreset {
 
   /**
    * 기존의 퀴즈 프리셋을 업데이트 하는 함수 updateQuizPreset
-   * @param presetPin
+   * @param _id
    * @param updatedPreset
    */
   static async updateQuizPreset(
-    presetPin: number,
+    _id: string,
     updatedPreset: Partial<QuizPresetType>,
   ) {
-    await model.updateOne({ presetPin }, { $set: { ...updatedPreset } }).exec();
+    await model.updateOne({ _id }, { $set: { ...updatedPreset } }).exec();
   }
 
   /**
@@ -52,13 +52,13 @@ class ModelQuizPreset {
   }
 
   /**
-   * 퀴즈 프리셋 목록을 불러오는 함수 getQuizPreset
+   * 특정 PIN에 맞는 퀴즈 프리셋을 불러오는 함수 getQuizPresetById
    * @param param.page 불러올 페이지
    * @param param.limit 한 페이지 당 불러올 document 수량
    */
-  static async getQuizPresetById(presetPin: number) {
+  static async getQuizPresetById(_id: string) {
     const quizPresetList = await model
-      .findOne({ presetPin }, { title: 1, presetPin: 1, quizList: 1 })
+      .findOne({ _id }, { title: 1, presetPin: 1, quizList: 1 })
       .lean()
       .exec();
     return quizPresetList;

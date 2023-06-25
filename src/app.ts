@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import express from 'express';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import mongoose from 'mongoose';
 
 import { DEV_CONFIG, PROD_CONFIG } from '@/constants/index';
 import router from '@/routes/index';
@@ -14,6 +13,11 @@ dotenv.config();
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
 const CURRENT_CONFIG = isProd ? PROD_CONFIG : DEV_CONFIG;
+
+// SSL 관련 인증을 Dev 환경에서 무시하기 위해 추가
+if (!isProd) {
+  process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+}
 
 const initExpressApp = () => {
   const app = express();

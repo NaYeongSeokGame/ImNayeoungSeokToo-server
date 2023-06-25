@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import fs from 'fs';
 import { Types } from 'mongoose';
 
 import ModelQuiz from '@/models/quiz/quiz';
@@ -14,11 +15,12 @@ class QuizController {
     const { presetPin } = req.query;
 
     if (!presetPin)
-      throw new BadRequestError('요청에 프리셋 PIN 번호가 없습니다.');
+      throw new BadRequestError('요청에 담긴 프리셋 PIN 이 없습니다.');
 
-    const presetData = await ModelQuizPreset.getQuizPresetById(
-      Number(presetPin),
-    );
+    if (typeof presetPin !== 'string')
+      throw new BadRequestError('유효하지 않은 프리셋 PIN 번호입니다.');
+
+    const presetData = await ModelQuizPreset.getQuizPresetById(presetPin);
 
     if (!presetData)
       throw new BadRequestError('해당 PIN 번호를 가진 프리셋이 없습니다.');
@@ -62,17 +64,21 @@ class QuizController {
     const answerList = answers as string[];
     await Promise.all(
       imageFiles.map(async (imageFile, index) => {
-        const imageUrl = await S3StorageModule.uploadFileToS3(imageFile);
+        const imageUrl = await S3StorageModule.uploadFileToS3({
+          fileData: imageFile,
+          presetPin: createdQuizPresetPin,
+        });
         const answer = answerList[index];
         await ModelQuiz.createQuizPreset({
           imageUrl,
           answer,
           includedPresetPin: createdQuizPresetPin,
         });
+        fs.unlinkSync(imageFile.path);
       }),
     );
 
-    return res.send(200).json({ presetPin: createdQuizPresetPin });
+    return res.status(200).json({ presetPin: createdQuizPresetPin });
   }
 
   static async deleteQuizPreset(req: Request, res: Response) {
@@ -98,7 +104,7 @@ class QuizController {
       ),
     );
 
-    return res.status(200).send();
+    return res.sendStatus(200);
   }
 }
 
