@@ -13,7 +13,7 @@ type WrapperFunc = (
  * @params 비동기 처리를 진행할 함수 fn
  */
 
-export const wrapAsync =
+export const errorCatchHandler =
   (fn: WrapperFunc) => (req: Request, res: Response, next: NextFunction) => {
     return fn(req, res, next).catch(next);
   };
