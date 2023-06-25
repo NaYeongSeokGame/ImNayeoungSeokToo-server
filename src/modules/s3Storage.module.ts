@@ -2,6 +2,7 @@ import { S3 } from 'aws-sdk';
 import fs from 'fs';
 
 import s3Storage from '@/configs/s3Config';
+import { InternalServerError } from '@/utils/definedErrors';
 
 class S3StorageModule {
   static async uploadFileToS3({
@@ -21,7 +22,12 @@ class S3StorageModule {
       };
 
       const result = await s3Storage.upload(params).promise();
-      return result.Location;
+      if (!result)
+        throw new InternalServerError(
+          'S3 버킷에 파일을 업로드하는 과정에서 문제가 생겼습니다.',
+        );
+
+      return `https://${process.env.CLOUDFRONT_URL}/preset/${presetPin}/${fileData.originalname}`;
     } catch (error) {
       console.log(error);
       throw error;
