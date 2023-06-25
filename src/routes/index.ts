@@ -6,7 +6,7 @@ const router = express.Router();
 
 const routerList = [
   {
-    path: '/docs',
+    path: '/api-docs',
     route: docsRouter,
   },
 ];

@@ -16,7 +16,12 @@ const swaggerOptions = {
         url: 'https://choosealicense.com/licenses/mit/',
       },
     },
-    servers: [{ url: 'http://localhost:4000', description: '개발 서버' }],
+    servers: [
+      {
+        url: 'http://ec2-43-202-28-155.ap-northeast-2.compute.amazonaws.com:8000',
+        description: '배포 서버',
+      },
+    ],
   },
   apis: ['./src/docs/routes/*', './src/docs/components/*'],
 };

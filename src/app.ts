@@ -15,13 +15,6 @@ const CURRENT_CONFIG = isProd ? PROD_CONFIG : DEV_CONFIG;
 
 const app = express();
 
-// Security (배포 환경에서만 적용)
-if (isProd) {
-  app.use(helmet());
-  app.use(hpp());
-  app.set('trust proxy', true);
-}
-
 // Body Parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -34,7 +27,7 @@ app.use(
   }),
 );
 
-// Router List
+//Router List
 app.use('/api/v1', router);
 
 app.get('/', (_, res) => {
@@ -45,6 +38,23 @@ app.listen(CURRENT_CONFIG.port, () => {
   console.log(`server is running on ${CURRENT_CONFIG.port}`);
 });
 
+// Security (배포 환경에서만 적용)
+if (isProd) {
+  const cspDefaults = helmet.contentSecurityPolicy.getDefaultDirectives();
+  delete cspDefaults['upgrade-insecure-requests'];
+
+  app.use(
+    helmet({
+      contentSecurityPolicy: { directives: cspDefaults },
+    }),
+  );
+
+  app.use(hpp());
+  app.set('trust proxy', true);
+}
+
 // Error Handler
 app.use(errorHandler);
+
+// leak problem
 app.disable('x-powered-by');
