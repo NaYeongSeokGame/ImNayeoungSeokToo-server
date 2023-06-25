@@ -19,7 +19,7 @@ class ModelQuizPreset {
       title,
       quizList,
     });
-    return createdQuizPresetDocs;
+    return createdQuizPresetDocs._id.toString();
   }
 
   /**
@@ -44,6 +44,19 @@ class ModelQuizPreset {
       .find({ isPrivate: false }, { title: 1, presetPin: 1, quizList: 1 })
       .skip((page - 1) * limit)
       .limit(limit)
+      .lean()
+      .exec();
+    return quizPresetList;
+  }
+
+  /**
+   * 퀴즈 프리셋 목록을 불러오는 함수 getQuizPreset
+   * @param param.page 불러올 페이지
+   * @param param.limit 한 페이지 당 불러올 document 수량
+   */
+  static async getQuizPresetById(presetPin: number) {
+    const quizPresetList = await model
+      .findOne({ presetPin }, { title: 1, presetPin: 1, quizList: 1 })
       .lean()
       .exec();
     return quizPresetList;

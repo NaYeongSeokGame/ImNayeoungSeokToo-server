@@ -6,14 +6,14 @@ import { Schema, model } from 'mongoose';
 export interface QuizType {
   imageUrl: string;
   answer: string;
-  includedPresetPin: number;
+  includedPresetPin: string;
 }
 
 export const Quiz = new Schema<QuizType>(
   {
     imageUrl: { type: String, required: true },
     answer: { type: String, required: true },
-    includedPresetPin: { type: Number, required: true },
+    includedPresetPin: { type: String, required: true },
   },
   {
     collection: 'quizzes',
