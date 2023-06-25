@@ -38,14 +38,14 @@ class QuizController {
         '하나의 프리셋에 퀴즈는 최대 9개까지 가능합니다.',
       );
 
-    const { isPrivate, title, answer } = req.body;
+    const { isPrivate = false, title, answers } = req.body;
 
-    const createdQuizPresetPIN = await ModelQuizPreset.createQuizPreset({
+    const createdQuizPresetPin = await ModelQuizPreset.createQuizPreset({
       isPrivate,
       title,
     });
 
-    const answerList = answer as string[];
+    const answerList = answers as string[];
     await Promise.all(
       imageFiles.map(async (imageFile, index) => {
         const imageUrl = await S3StorageModule.uploadFileToS3(imageFile);
@@ -53,12 +53,23 @@ class QuizController {
         await ModelQuiz.createQuizPreset({
           imageUrl,
           answer,
-          includedPresetPin: createdQuizPresetPIN,
+          includedPresetPin: createdQuizPresetPin,
         });
       }),
     );
 
-    return res.send(200).json({ presetPin: createdQuizPresetPIN });
+    return res.send(200).json({ presetPin: createdQuizPresetPin });
+  }
+
+  static async deleteQuizPreset(req: Request, res: Response) {
+    const { presetPin } = req.query;
+
+    if (!presetPin)
+      throw new BadRequestError('요청에 프리셋 PIN 번호가 없습니다.');
+
+    await ModelQuizPreset.deleteQuizPreset(Number(presetPin));
+
+    return res.status(200).send();
   }
 }
 
