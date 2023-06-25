@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 import model from './model';
 import type { QuizType } from './model';
 
@@ -31,15 +33,15 @@ class ModelQuiz {
     await model.updateOne({ _id }, { $set: { ...updatedQuiz } }).exec();
   }
 
-  static async getQuizListInPreset(presetPin: number) {
+  static async getQuizListInPreset(includedPresetPin: string) {
     const quizListInPreset = await model
-      .find({ includedPresetPin: presetPin }, { imageUrl: 1, answer: 1 })
+      .find({ includedPresetPin }, { imageUrl: 1, answer: 1, _id: 1 })
       .lean()
       .exec();
     return quizListInPreset;
   }
 
-  static async deleteQuiz(_id: number) {
+  static async deleteQuiz(_id: string) {
     await model.deleteOne({ _id }).exec();
   }
 }
