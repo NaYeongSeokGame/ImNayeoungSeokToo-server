@@ -4,13 +4,19 @@ import fs from 'fs';
 import s3Storage from '@/configs/s3Config';
 
 class S3StorageModule {
-  static async uploadFileToS3(fileData: Express.Multer.File): Promise<string> {
+  static async uploadFileToS3({
+    fileData,
+    presetPin,
+  }: {
+    fileData: Express.Multer.File;
+    presetPin: string;
+  }): Promise<string> {
     try {
       const fileContent: Buffer = fs.readFileSync(fileData.path);
 
       const params: S3.PutObjectRequest = {
         Bucket: process.env.S3_BUCKET_NAME || '',
-        Key: fileData.originalname,
+        Key: `${presetPin}/${fileData.originalname}`,
         Body: fileContent,
       };
 

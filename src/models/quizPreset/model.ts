@@ -15,7 +15,6 @@ export interface QuizPresetType {
 
 const QuizPreset = new Schema<QuizPresetType>(
   {
-    presetPin: { type: Number, required: true },
     isPrivate: { type: Boolean, required: true, default: false },
     title: { type: String, required: true },
     quizList: {
