@@ -4,11 +4,13 @@ import QuizController from '@/controllers/quiz.controllers';
 import upload from '@/middlewares/multer';
 import { errorCatchHandler } from '@/utils/errorCatchHandler';
 
-const router = express.Router();
+const quizRouter = express.Router();
 
-router.get('/', errorCatchHandler(QuizController.getQuizPreset));
-router.post(
+quizRouter.get('/', errorCatchHandler(QuizController.getQuizPreset));
+quizRouter.post(
   '/create',
   upload.array('images'),
   errorCatchHandler(QuizController.postCreateQuizPreset),
 );
+
+export default quizRouter;
