@@ -3,17 +3,17 @@ import { Schema, model } from 'mongoose';
 /**
  * 프리셋에 포함된 퀴즈 모델
  */
-export interface Quiz {
+export interface QuizType {
   imageUrl: string;
   answer: string;
-  quizIndex: number;
+  includedPresetPin: number;
 }
 
-export const schema = new Schema<Quiz>(
+export const Quiz = new Schema<QuizType>(
   {
     imageUrl: { type: String, required: true },
     answer: { type: String, required: true },
-    quizIndex: { type: Number, required: true },
+    includedPresetPin: { type: Number, required: true },
   },
   {
     collection: 'quizzes',
@@ -21,4 +21,4 @@ export const schema = new Schema<Quiz>(
   },
 );
 
-export default model<Quiz>('quizzes', schema);
+export default model<QuizType>('quizzes', Quiz);

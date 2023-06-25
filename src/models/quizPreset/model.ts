@@ -1,23 +1,25 @@
-import { Schema, Types, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
+
+import { Quiz } from '@/models/quiz/model';
+import type { QuizType } from '@/models/quiz/model';
 
 /**
  * 프리셋에 포함된 퀴즈 모델
  */
-export interface QuizPreset {
+export interface QuizPresetType {
   presetPin: number;
   isPrivate: boolean;
   title: string;
-  quizList: Types.DocumentArray<Types.ObjectId>;
+  quizList: QuizType[];
 }
 
-const schema = new Schema<QuizPreset>(
+const QuizPreset = new Schema<QuizPresetType>(
   {
     presetPin: { type: Number, required: true },
     isPrivate: { type: Boolean, required: true, default: false },
     title: { type: String, required: true },
     quizList: {
-      type: [Schema.Types.ObjectId],
-      ref: 'quizzes',
+      type: [Quiz],
       default: [],
     },
   },
@@ -27,4 +29,4 @@ const schema = new Schema<QuizPreset>(
   },
 );
 
-export default model<QuizPreset>('quizPresets', schema);
+export default model<QuizPresetType>('quizPresets', QuizPreset);
