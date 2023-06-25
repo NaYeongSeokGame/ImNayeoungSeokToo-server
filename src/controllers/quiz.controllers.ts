@@ -1,4 +1,5 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
+import { Types } from 'mongoose';
 
 import ModelQuiz from '@/models/quiz/quiz';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
@@ -80,7 +81,22 @@ class QuizController {
     if (!presetPin)
       throw new BadRequestError('요청에 프리셋 PIN 번호가 없습니다.');
 
-    await ModelQuizPreset.deleteQuizPreset(Number(presetPin));
+    const quizList = await ModelQuiz.getQuizListInPreset(presetPin as string);
+
+    await Promise.all(
+      quizList.map(
+        async ({
+          _id,
+          imageUrl,
+        }: {
+          _id: Types.ObjectId;
+          imageUrl: string;
+        }) => {
+          await ModelQuiz.deleteQuiz(_id.toString());
+          await S3StorageModule.deleteFileFromS3(imageUrl);
+        },
+      ),
+    );
 
     return res.status(200).send();
   }

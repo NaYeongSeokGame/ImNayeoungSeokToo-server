@@ -1,3 +1,5 @@
+import { BadRequestError } from '@/utils/definedErrors';
+
 import model from './model';
 import type { QuizPresetType } from './model';
 
@@ -63,7 +65,10 @@ class ModelQuizPreset {
   }
 
   static async deleteQuizPreset(presetPin: number) {
-    await model.deleteOne({ presetPin }).exec();
+    const result = await model.deleteOne({ presetPin }).exec();
+
+    if (!result.deletedCount)
+      throw new BadRequestError('요청하신 PIN 에 해당되는 프리셋이 없습니다');
   }
 }
 
