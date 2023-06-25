@@ -27,7 +27,8 @@ class S3StorageModule {
           'S3 버킷에 파일을 업로드하는 과정에서 문제가 생겼습니다.',
         );
 
-      return `${process.env.CLOUDFRONT_URL}/preset/${presetPin}/${fileData.originalname}`;
+      const cloudFrontUrl = `${process.env.CLOUDFRONT_URL}/preset/${presetPin}/${fileData.originalname}`;
+      return cloudFrontUrl;
     } catch (error) {
       console.log(error);
       throw error;
