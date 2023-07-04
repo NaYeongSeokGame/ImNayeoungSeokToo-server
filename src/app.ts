@@ -29,7 +29,7 @@ const initExpressApp = () => {
   // CORS Setting
   app.use(
     cors({
-      origin: CURRENT_CONFIG.baseURL,
+      origin: true, // FIXME : 로컬 환경에서의 테스트를 위해 CORS 임시 해제
       credentials: true,
     }),
   );
