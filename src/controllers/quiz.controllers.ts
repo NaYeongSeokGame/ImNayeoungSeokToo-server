@@ -5,6 +5,11 @@ import { Types } from 'mongoose';
 import ModelQuiz from '@/models/quiz/quiz';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
 import S3StorageModule from '@/modules/s3Storage.module';
+import {
+  DeleteQuizPresetReqQueryType,
+  GetQuizPresetListReqQueryType,
+  PostCreateQuizPresetReqBodyType,
+} from '@/type/controllers/quizControllers';
 import { BadRequestError } from '@/utils/definedErrors';
 
 class QuizController {
@@ -31,7 +36,10 @@ class QuizController {
   /**
    * 페이지네이션을 기반으로 프리셋 목록을 전달하는 함수 getQuizPresetList
    */
-  static async getQuizPresetList(req: Request, res: Response) {
+  static async getQuizPresetList(
+    req: Request<unknown, unknown, unknown, GetQuizPresetListReqQueryType>,
+    res: Response,
+  ) {
     const { page = '1', limit = '9' } = req.query;
 
     const presetListData = await ModelQuizPreset.getQuizPreset({
@@ -44,7 +52,10 @@ class QuizController {
   /**
    * 새로운 퀴즈 프리셋을 생성하는 함수 postCreateQuizPreset
    */
-  static async postCreateQuizPreset(req: Request, res: Response) {
+  static async postCreateQuizPreset(
+    req: Request<unknown, unknown, PostCreateQuizPresetReqBodyType>,
+    res: Response,
+  ) {
     const imageFiles = req.files as Express.Multer.File[] | undefined;
 
     if (!imageFiles || !imageFiles.length)
@@ -65,7 +76,7 @@ class QuizController {
       title,
     });
 
-    const answerList = answers as string[];
+    const answerList = answers;
     await Promise.all(
       imageFiles.map(async (imageFile, index) => {
         const imageUrl = await S3StorageModule.uploadFileToS3({
@@ -85,13 +96,16 @@ class QuizController {
     return res.status(200).json({ presetPin: createdQuizPresetPin });
   }
 
-  static async deleteQuizPreset(req: Request, res: Response) {
+  static async deleteQuizPreset(
+    req: Request<unknown, unknown, unknown, DeleteQuizPresetReqQueryType>,
+    res: Response,
+  ) {
     const { presetPin } = req.query;
 
     if (!presetPin)
       throw new BadRequestError('요청에 프리셋 PIN 번호가 없습니다.');
 
-    const quizList = await ModelQuiz.getQuizListInPreset(presetPin as string);
+    const quizList = await ModelQuiz.getQuizListInPreset(presetPin);
 
     await Promise.all(
       quizList.map(
@@ -108,7 +122,7 @@ class QuizController {
       ),
     );
 
-    await ModelQuizPreset.deleteQuizPreset(presetPin as string);
+    await ModelQuizPreset.deleteQuizPreset(presetPin);
 
     return res.sendStatus(200);
   }
