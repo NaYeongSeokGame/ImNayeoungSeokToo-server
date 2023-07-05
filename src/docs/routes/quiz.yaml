@@ -55,6 +55,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/quiz/remove:
     delete:
       summary: 특정 PIN 에 해당되는 QuizPreset 삭제
       tags:
@@ -69,14 +70,6 @@ paths:
       responses:
         '200':
           description: 퀴즈 프리셋 삭제 완료
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  isSuccess:
-                    type: boolean
-                    description: 삭제 완료 여부
         '400':
           description: 잘못된 요청 오류
           content:
@@ -89,6 +82,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/quiz/create:
     post:
       summary: 새로운 Quiz Preset 생성
       tags:
@@ -179,14 +173,3 @@ paths:
                     presetPin:
                       type: string
                       description: 프리셋 PIN
-                    quizList:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          imageUrl:
-                            type: string
-                            description: 퀴즈 이미지 URL
-                          answer:
-                            type: string
-                            description: 퀴즈 정답

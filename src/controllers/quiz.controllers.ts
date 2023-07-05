@@ -57,6 +57,9 @@ class QuizController {
 
     const { isPrivate = false, title, answers } = req.body;
 
+    if (!title)
+      throw new BadRequestError('프리셋에 이름은 꼭 지어주셔야 합니다.');
+
     const createdQuizPresetPin = await ModelQuizPreset.createQuizPreset({
       isPrivate,
       title,

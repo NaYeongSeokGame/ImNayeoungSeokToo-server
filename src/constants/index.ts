@@ -5,7 +5,7 @@ dotenv.config();
 export const DEV_CONFIG = {
   mode: 'dev',
   port: '4000',
-  baseURL: 'http://localhost:3000',
+  baseURL: 'http://localhost:5173',
   mongoose: {
     uri: process.env.DEV_MONGO_URI || '',
   },
@@ -14,7 +14,7 @@ export const DEV_CONFIG = {
 export const PROD_CONFIG = {
   mode: 'dev',
   port: '8000',
-  baseURL: 'http://ec2-43-202-28-155.ap-northeast-2.compute.amazonaws.com/',
+  baseURL: 'http://ec2-43-202-28-155.ap-northeast-2.compute.amazonaws.com',
   mongoose: {
     uri: process.env.PROD_MONGO_URI || '',
   },
