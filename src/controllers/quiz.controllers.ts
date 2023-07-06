@@ -39,11 +39,19 @@ class QuizController {
     req: Request<unknown, unknown, unknown, GetQuizPresetListReqQueryType>,
     res: Response,
   ) {
-    const { page = '1', limit = '9' } = req.query;
+    const { page = 1, limit = 9 } = req.query;
+
+    if (Number.isNaN(page) || Number.isNaN(limit))
+      throw new BadRequestError(
+        'page 혹은 limit 값은 반드시 유효한 숫자여야 합니다.',
+      );
+
+    if (page <= 0 || limit <= 0)
+      throw new BadRequestError('page 및 limit 값은 반드시 양수여야 합니다.');
 
     const presetListData = await ModelQuizPreset.getQuizPreset({
-      page: Number(page),
-      limit: Number(limit),
+      page,
+      limit,
     });
 
     return res.status(200).json(presetListData);
