@@ -31,6 +31,10 @@ class ModelQuiz {
     await model.updateOne({ _id }, { $set: { ...updatedQuiz } }).exec();
   }
 
+  /**
+   * 특정 퀴즈 프리셋 PIN 에 포함된 퀴즈 목록을 가져오는 함수 getQuizListInPreset
+   * @param includedPresetPin 퀴즈 프리셋 PIN 
+   */
   static async getQuizListInPreset(includedPresetPin: string) {
     const quizListInPreset = await model
       .find({ includedPresetPin }, { imageUrl: 1, answer: 1, _id: 1 })
@@ -39,8 +43,12 @@ class ModelQuiz {
     return quizListInPreset;
   }
 
-  static async deleteQuiz(_id: string) {
-    await model.deleteOne({ _id }).exec();
+  /**
+   * 특정 퀴즈 프리셋 PIN 에 포함된 퀴즈를 일괄로 삭제하는 함수 deleteQuizInPreset
+   * @param includedPresetPin 삭제하고자 하는 퀴즈 프리셋 PIN 
+   */
+  static async deleteQuizInPreset(includedPresetPin: string) {
+    await model.deleteMany({ includedPresetPin }).exec();
   }
 }
 

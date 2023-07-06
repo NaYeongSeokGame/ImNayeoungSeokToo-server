@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
-import { Types } from 'mongoose';
 
 import ModelQuiz from '@/models/quiz/quiz';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
@@ -108,20 +107,12 @@ class QuizController {
     const quizList = await ModelQuiz.getQuizListInPreset(presetPin);
 
     await Promise.all(
-      quizList.map(
-        async ({
-          _id,
-          imageUrl,
-        }: {
-          _id: Types.ObjectId;
-          imageUrl: string;
-        }) => {
-          await ModelQuiz.deleteQuiz(_id.toString());
-          await S3StorageModule.deleteFileFromS3(imageUrl);
-        },
-      ),
+      quizList.map(async ({ imageUrl }) => {
+        await S3StorageModule.deleteFileFromS3(imageUrl);
+      }),
     );
 
+    await ModelQuiz.deleteQuizInPreset(presetPin);
     await ModelQuizPreset.deleteQuizPreset(presetPin);
 
     return res.sendStatus(200);
