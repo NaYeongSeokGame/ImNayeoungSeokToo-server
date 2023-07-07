@@ -25,10 +25,11 @@ class QuizController {
       throw new BadRequestError('유효하지 않은 프리셋 PIN 번호입니다.');
 
     const presetData = await ModelQuizPreset.getQuizPresetById(presetPin);
-    const quizList = await ModelQuiz.getQuizListInPreset(presetData.presetPin);
 
     if (!presetData)
       throw new BadRequestError('해당 PIN 번호를 가진 프리셋이 없습니다.');
+
+    const quizList = await ModelQuiz.getQuizListInPreset(presetPin);
 
     return res.status(200).json({ ...presetData, quizList });
   }
@@ -39,19 +40,21 @@ class QuizController {
     req: Request<unknown, unknown, unknown, GetQuizPresetListReqQueryType>,
     res: Response,
   ) {
-    const { page = 1, limit = 9 } = req.query;
+    const { page = '1', limit = '9' } = req.query;
 
     if (Number.isNaN(page) || Number.isNaN(limit))
       throw new BadRequestError(
         'page 혹은 limit 값은 반드시 유효한 숫자여야 합니다.',
       );
 
-    if (page <= 0 || limit <= 0)
+    const [pageNum, limitNum] = [page, limit].map(Number);
+
+    if (pageNum <= 0 || limitNum <= 0)
       throw new BadRequestError('page 및 limit 값은 반드시 양수여야 합니다.');
 
     const presetListData = await ModelQuizPreset.getQuizPreset({
-      page,
-      limit,
+      page: pageNum,
+      limit: limitNum,
     });
 
     return res.status(200).json(presetListData);
@@ -83,17 +86,16 @@ class QuizController {
       title,
     });
 
-    const answerList = answers;
     await Promise.all(
       imageFiles.map(async (imageFile, index) => {
         const imageUrl = await S3StorageModule.uploadFileToS3({
           fileData: imageFile,
           presetPin: createdQuizPresetPin,
         });
-        const answer = answerList[index];
+        const currentIndexAnswer = answers[index];
         await ModelQuiz.createQuizPreset({
           imageUrl,
-          answer,
+          answer: currentIndexAnswer,
           includedPresetPin: createdQuizPresetPin,
         });
         fs.unlinkSync(imageFile.path);
@@ -103,6 +105,9 @@ class QuizController {
     return res.status(200).json({ presetPin: createdQuizPresetPin });
   }
 
+  /**
+   * 기존의 프리셋을 삭제하는 함수 deleteQuizPreset
+   */
   static async deleteQuizPreset(
     req: Request<unknown, unknown, unknown, DeleteQuizPresetReqQueryType>,
     res: Response,
