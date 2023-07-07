@@ -1,12 +1,20 @@
 import { Schema, model } from 'mongoose';
 
 /**
- * 프리셋에 포함된 퀴즈 모델
+ * 퀴즈 프리셋 모델 타입
  */
 export interface QuizPresetType {
   isPrivate: boolean;
   title: string;
 }
+
+/**
+ * 퀴즈 프리셋 모델에 Pin 넘버 및 썸네일 Url이 포함된 타입
+ */
+export type QuizPresetWithInfoType = QuizPresetType & {
+  presetPin: string;
+  thumbnailUrl: string;
+};
 
 const QuizPreset = new Schema<QuizPresetType>(
   {
