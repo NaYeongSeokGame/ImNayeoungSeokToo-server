@@ -8,6 +8,7 @@ const quizRouter = express.Router();
 
 quizRouter.get('/', errorCatchHandler(QuizController.getQuizPreset));
 quizRouter.get('/list', errorCatchHandler(QuizController.getQuizPresetList));
+quizRouter.get('/answer', errorCatchHandler(QuizController.getQuizAnswerList));
 
 quizRouter.delete(
   '/remove',
