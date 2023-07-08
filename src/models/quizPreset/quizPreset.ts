@@ -3,11 +3,8 @@ import { Types } from 'mongoose';
 import { BadRequestError } from '@/utils/definedErrors';
 
 import model from './model';
-import type { QuizPresetType } from './model';
+import type { QuizPresetType, QuizPresetWithInfoType } from './model';
 
-type QuizPresetWithPinType = QuizPresetType & {
-  presetPin: string;
-};
 
 class ModelQuizPreset {
   /**
@@ -44,18 +41,49 @@ class ModelQuizPreset {
    */
   static async getQuizPreset({ page, limit }: { page: number; limit: number }) {
     const quizPresetList = await model
-      .aggregate<QuizPresetWithPinType>([
+      .aggregate<QuizPresetWithInfoType>([
         {
           $match: { isPrivate: false },
         },
         { $skip: (page - 1) * limit },
         { $limit: limit },
+        { $addFields: { presetPin: { $toString: '$_id' } } },
+        {
+          $lookup: {
+            from: 'quizzes',
+            localField: 'presetPin',
+            foreignField: 'includedPresetPin',
+            pipeline: [
+              {
+                $sort: { createdAt: -1 },
+              },
+              {
+                $limit: 1,
+              },
+              {
+                $project: {
+                  _id: 0,
+                  answer: 0,
+                  includedPresetPin: 0,
+                  createdAt: 0,
+                  updatedAt: 0,
+                  __v: 0,
+                }
+              }
+            ],
+            as: 'quizList',
+          },
+        },
+        {
+          $unwind: '$quizList',
+        },
         {
           $project: {
             title: 1,
             isPrivate: 1,
+            presetPin: 1,
             _id: 0,
-            presetPin: '$_id',
+            thumbnailUrl: '$quizList.imageUrl',
           },
         },
       ])
@@ -70,16 +98,50 @@ class ModelQuizPreset {
    */
   static async getQuizPresetById(presetPin: string) {
     const [quizPresetList] = await model
-      .aggregate<QuizPresetWithPinType>([
+      .aggregate<QuizPresetWithInfoType>([
         {
           $match: { _id: new Types.ObjectId(presetPin) },
+        },
+        {
+          $unwind: '$_id'
+        },
+        { $addFields: { presetPin: { $toString: '$_id' } } },
+        {
+          $lookup: {
+            from: 'quizzes',
+            localField: 'presetPin',
+            foreignField: 'includedPresetPin',
+            pipeline: [
+              {
+                $sort: { createdAt: -1 },
+              },
+              {
+                $limit: 1,
+              },
+              {
+                $project: {
+                  _id: 0,
+                  answer: 0,
+                  includedPresetPin: 0,
+                  createdAt: 0,
+                  updatedAt: 0,
+                  __v: 0,
+                }
+              }
+            ],
+            as: 'quizList',
+          },
+        },
+        {
+          $unwind: '$quizList',
         },
         {
           $project: {
             title: 1,
             isPrivate: 1,
+            presetPin: 1,
             _id: 0,
-            presetPin: '$_id',
+            thumbnailUrl: '$quizList.imageUrl',
           },
         },
       ])

@@ -29,6 +29,9 @@ paths:
                   isPrivate:
                     type: boolean
                     description: 프리셋 비공개 여부
+                  thumbnailUrl:
+                    type: string
+                    description: 프리셋 썸네일 이미지 URL
                   presetPin:
                     type: string
                     description: 프리셋 PIN
@@ -170,6 +173,9 @@ paths:
                     isPrivate:
                       type: boolean
                       description: 프리셋 비공개 여부
+                    thumbnailUrl:
+                      type: string
+                      description: 프리셋 썸네일 이미지 URL
                     presetPin:
                       type: string
                       description: 프리셋 PIN

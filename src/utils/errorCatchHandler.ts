@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from 'express';
 
 type WrapperFunc = (
-  req: Request,
+  req: Request<any, any, any, any>,
   res: Response,
   next: NextFunction,
 ) => Promise<Response | void>;
@@ -14,6 +15,11 @@ type WrapperFunc = (
  */
 
 export const errorCatchHandler =
-  (fn: WrapperFunc) => (req: Request, res: Response, next: NextFunction) => {
+  (fn: WrapperFunc) =>
+  (
+    req: Request<any, any, any, any>,
+    res: Response,
+    next: NextFunction,
+  ) => {
     return fn(req, res, next).catch(next);
   };
