@@ -8,11 +8,11 @@ class ModelHashTag {
    * 새로운 해시태그를 생성하는 함수 createHashtag
    * @param param.content 새롭게 등록할 해시태그 컨텐츠
    */
-  static async createHashtag({ content }: HashtagType) {
+  static async createHashtag(content: string) {
     const createdHashtagDocs = await model.create({
       content,
     });
-    return createdHashtagDocs;
+    return createdHashtagDocs._id.toString();
   }
 
   /**
