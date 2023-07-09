@@ -32,7 +32,6 @@ class ServiceQuiz {
           answer: currentIndexAnswer,
           includedPresetPin: presetPin,
         });
-        fs.unlinkSync(imageFile.path);
       }),
     );
   }
