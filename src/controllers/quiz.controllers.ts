@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import fs from 'fs';
 
 import ModelQuiz from '@/models/quiz/quiz';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
-import S3StorageModule from '@/modules/s3Storage.module';
+import HashtagService from '@/services/hashtag.service';
+import QuizService from '@/services/quiz.service';
 import {
   DeleteQuizPresetReqQueryType,
   GetQuizPresetListReqQueryType,
@@ -30,25 +30,28 @@ class QuizController {
       throw new BadRequestError('해당 PIN 번호를 가진 프리셋이 없습니다.');
 
     const quizList = await ModelQuiz.getQuizListInPreset(presetPin);
+    const hashtagList = await HashtagService.getHashtagListByPresetId(
+      presetPin,
+    );
 
-    return res.status(200).json({ ...presetData, quizList });
+    return res.status(200).json({ ...presetData, quizList, hashtagList });
   }
-    /**
+  /**
    * 특정 프리셋 PIN 넘버에 맞는 데이터를 반환하는 함수 getQuizPreset
    */
-    static async getQuizAnswerList(req: Request, res: Response) {
-      const { presetPin } = req.query;
-  
-      if (!presetPin)
-        throw new BadRequestError('요청에 담긴 프리셋 PIN 이 없습니다.');
-  
-      if (typeof presetPin !== 'string')
-        throw new BadRequestError('유효하지 않은 프리셋 PIN 번호입니다.');
-  
-      const answerList = await ModelQuiz.getQuizListInPreset(presetPin);
-  
-      return res.status(200).json({ ...answerList });
-    }
+  static async getQuizAnswerList(req: Request, res: Response) {
+    const { presetPin } = req.query;
+
+    if (!presetPin)
+      throw new BadRequestError('요청에 담긴 프리셋 PIN 이 없습니다.');
+
+    if (typeof presetPin !== 'string')
+      throw new BadRequestError('유효하지 않은 프리셋 PIN 번호입니다.');
+
+    const answerList = await ModelQuiz.getQuizListInPreset(presetPin);
+
+    return res.status(200).json({ ...answerList });
+  }
   /**
    * 페이지네이션을 기반으로 프리셋 목록을 전달하는 함수 getQuizPresetList
    */
@@ -68,12 +71,23 @@ class QuizController {
     if (pageNum <= 0 || limitNum <= 0)
       throw new BadRequestError('page 및 limit 값은 반드시 양수여야 합니다.');
 
-    const presetListData = await ModelQuizPreset.getQuizPreset({
+    const presetDataList = await ModelQuizPreset.getQuizPreset({
       page: pageNum,
       limit: limitNum,
     });
 
-    return res.status(200).json(presetListData);
+    // NOTE : 프리셋 목록을 순회하며 해시태그 정보를 주입하는 로직
+    const presetPinWithHashTag = await Promise.all(
+      presetDataList.map(async (presetData) => {
+        const { presetPin } = presetData;
+        const hashtagList = await HashtagService.getHashtagListByPresetId(
+          presetPin,
+        );
+        return { ...presetData, hashtagList };
+      }),
+    );
+
+    return res.status(200).json(...presetPinWithHashTag);
   }
   /**
    * 새로운 퀴즈 프리셋을 생성하는 함수 postCreateQuizPreset
@@ -92,7 +106,7 @@ class QuizController {
         '하나의 프리셋에 퀴즈는 최대 9개까지 가능합니다.',
       );
 
-    const { isPrivate = false, title, answers } = req.body;
+    const { isPrivate = false, title, answers, hashtag = [] } = req.body;
 
     if (!title)
       throw new BadRequestError('프리셋에 이름은 꼭 지어주셔야 합니다.');
@@ -102,21 +116,16 @@ class QuizController {
       title,
     });
 
-    await Promise.all(
-      imageFiles.map(async (imageFile, index) => {
-        const imageUrl = await S3StorageModule.uploadFileToS3({
-          fileData: imageFile,
-          presetPin: createdQuizPresetPin,
-        });
-        const currentIndexAnswer = answers[index];
-        await ModelQuiz.createQuizPreset({
-          imageUrl,
-          answer: currentIndexAnswer,
-          includedPresetPin: createdQuizPresetPin,
-        });
-        fs.unlinkSync(imageFile.path);
-      }),
-    );
+    await QuizService.registerQuizWithImage({
+      answers,
+      imageFiles,
+      presetPin: createdQuizPresetPin,
+    });
+
+    await HashtagService.registerHashtagToPreset({
+      presetPin: createdQuizPresetPin,
+      hashtagContentList: hashtag,
+    });
 
     return res.status(200).json({ presetPin: createdQuizPresetPin });
   }
@@ -134,15 +143,14 @@ class QuizController {
       throw new BadRequestError('요청에 프리셋 PIN 번호가 없습니다.');
 
     const quizList = await ModelQuiz.getQuizListInPreset(presetPin);
+    const imageUrlList = quizList.map(({ imageUrl }) => imageUrl);
 
-    await Promise.all(
-      quizList.map(async ({ imageUrl }) => {
-        await S3StorageModule.deleteFileFromS3(imageUrl);
-      }),
-    );
+    await QuizService.deleteQuizPreset({
+      imageUrls: imageUrlList,
+      presetPin,
+    });
 
-    await ModelQuiz.deleteQuizInPreset(presetPin);
-    await ModelQuizPreset.deleteQuizPreset(presetPin);
+    await HashtagService.deleteHashtagOfPreset(presetPin);
 
     return res.sendStatus(200);
   }
