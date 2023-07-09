@@ -4,9 +4,8 @@ import type { QuizPresetHashtagType } from './model';
 class ModelQuizPresetHashtag {
   /**
    * 퀴즈 프리셋에 새로운 해시태그를 등록하는 함수 registerHashtagToPreset
-   * @param param.hashtagId S3에 등록된 이미지 url
-   * @param param.answer 퀴즈의 정답
-   * @param param.includedPresetPin 퀴즈가 소속된 프리셋의 pin
+   * @param param.hashtagId 새롭게 등록하고자 하는 Hashtag Id
+   * @param param.presetPin 해시태그를 등록하려는 프리셋 PIN
    * @returns
    */
   static async registerHashtagToPreset({
@@ -27,6 +26,23 @@ class ModelQuizPresetHashtag {
   static async getHashtagIdsFromPreset(presetPin: string) {
     const hashtagIdList = model
       .find({ presetPin }, { hashtagId: 1 })
+      .lean()
+      .exec();
+    return hashtagIdList;
+  }
+
+  /**
+   * 프리셋에 등록되었던 해시태그를 삭제하는 함수 deleteHashtagIdsFromPreset
+   * @param param.hashtagId 프리셋에서 삭제하려는 Hashtag Id
+   * @param param.presetPin 해시태그를 수정하려는 프리셋 PIN
+   * @returns 
+   */
+  static async deleteHashtagIdsFromPreset({
+    hashtagId,
+    presetPin,
+  }: QuizPresetHashtagType) {
+    const hashtagIdList = model
+      .deleteOne({ presetPin, hashtagId })
       .lean()
       .exec();
     return hashtagIdList;
