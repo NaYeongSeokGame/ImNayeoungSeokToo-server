@@ -1,5 +1,3 @@
-import fs from 'fs';
-
 import ModelQuiz from '@/models/quiz/quiz';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
 import S3StorageModule from '@/modules/s3Storage.module';
