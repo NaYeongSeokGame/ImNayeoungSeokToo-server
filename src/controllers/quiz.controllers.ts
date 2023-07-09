@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 
 import ModelQuiz from '@/models/quiz/quiz';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
-import HashtagService from '@/services/hashtag.service';
-import QuizService from '@/services/quiz.service';
+import ServiceHashtag from '@/services/hashtag.service';
+import ServiceQuiz from '@/services/quiz.service';
 import {
   DeleteQuizPresetReqQueryType,
   GetQuizPresetListReqQueryType,
@@ -30,7 +30,7 @@ class QuizController {
       throw new BadRequestError('해당 PIN 번호를 가진 프리셋이 없습니다.');
 
     const quizList = await ModelQuiz.getQuizListInPreset(presetPin);
-    const hashtagList = await HashtagService.getHashtagListByPresetId(
+    const hashtagList = await ServiceHashtag.getHashtagListByPresetId(
       presetPin,
     );
 
@@ -80,7 +80,7 @@ class QuizController {
     const presetPinWithHashTag = await Promise.all(
       presetDataList.map(async (presetData) => {
         const { presetPin } = presetData;
-        const hashtagList = await HashtagService.getHashtagListByPresetId(
+        const hashtagList = await ServiceHashtag.getHashtagListByPresetId(
           presetPin,
         );
         return { ...presetData, hashtagList };
@@ -116,13 +116,13 @@ class QuizController {
       title,
     });
 
-    await QuizService.registerQuizWithImage({
+    await ServiceQuiz.registerQuizWithImage({
       answers,
       imageFiles,
       presetPin: createdQuizPresetPin,
     });
 
-    await HashtagService.registerHashtagToPreset({
+    await ServiceHashtag.registerHashtagToPreset({
       presetPin: createdQuizPresetPin,
       hashtagContentList,
     });
@@ -143,14 +143,18 @@ class QuizController {
       throw new BadRequestError('요청에 프리셋 PIN 번호가 없습니다.');
 
     const quizList = await ModelQuiz.getQuizListInPreset(presetPin);
+
+    if (!quizList.length) 
+      throw new BadRequestError('유효하지 않은 PIN 번호입니다.')
+
     const imageUrlList = quizList.map(({ imageUrl }) => imageUrl);
 
-    await QuizService.deleteQuizPreset({
+    await ServiceQuiz.deleteQuizPreset({
       imageUrls: imageUrlList,
       presetPin,
     });
 
-    await HashtagService.deleteHashtagOfPreset(presetPin);
+    await ServiceHashtag.deleteHashtagOfPreset(presetPin);
 
     return res.sendStatus(200);
   }

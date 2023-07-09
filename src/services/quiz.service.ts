@@ -4,7 +4,7 @@ import ModelQuiz from '@/models/quiz/quiz';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
 import S3StorageModule from '@/modules/s3Storage.module';
 
-class QuizService {
+class ServiceQuiz {
   /**
    * 새로운 퀴즈를 등록시키고, 이미디 또한 AWS S3에 등록시키는 함수 registerQuizWithImage
    * @param param.answers 퀴즈의 정답 목록
@@ -59,4 +59,4 @@ class QuizService {
   }
 }
 
-export default QuizService;
+export default ServiceQuiz;

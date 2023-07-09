@@ -1,7 +1,7 @@
 import ModelHashTag from '@/models/hashtag/hashtag';
 import ModelQuizPresetHashtag from '@/models/quizPresetHashtag/quizPresetHashtag';
 
-class HashtagService {
+class ServiceHashtag {
   /**
    * 특정 퀴즈 프리셋에 연결된 해시태그 컨텐츠를 가져오는 함수 injectHashtagContent
    * @param presetPin 해시태그 목록을 가져올 퀴즈 프리셋 PIN
@@ -36,10 +36,7 @@ class HashtagService {
           hashtagContent,
         );
         if (!hashtagId) {
-          const createdHashtagDocs = await ModelHashTag.createHashtag({
-            content: hashtagContent,
-          });
-          hashtagId = createdHashtagDocs._id.toString();
+          hashtagId = await ModelHashTag.createHashtag(hashtagContent);
         }
         return hashtagId;
       }),
@@ -70,4 +67,4 @@ class HashtagService {
   }
 }
 
-export default HashtagService;
+export default ServiceHashtag;
