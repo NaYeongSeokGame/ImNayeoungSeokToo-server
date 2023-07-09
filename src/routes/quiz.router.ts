@@ -2,6 +2,7 @@ import express from 'express';
 
 import QuizController from '@/controllers/quiz.controllers';
 import upload from '@/middlewares/multer';
+import midResizeImage from '@/middlewares/resizeImage';
 import { errorCatchHandler } from '@/utils/errorCatchHandler';
 
 const quizRouter = express.Router();
@@ -18,6 +19,7 @@ quizRouter.delete(
 quizRouter.post(
   '/create',
   upload.array('images'),
+  midResizeImage,
   errorCatchHandler(QuizController.postCreateQuizPreset),
 );
 

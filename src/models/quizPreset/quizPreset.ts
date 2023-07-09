@@ -5,7 +5,6 @@ import { BadRequestError } from '@/utils/definedErrors';
 import model from './model';
 import type { QuizPresetType, QuizPresetWithInfoType } from './model';
 
-
 class ModelQuizPreset {
   /**
    * 새로운 퀴즈 프리셋을 생성하는 함수 createQuizPreset
@@ -14,7 +13,10 @@ class ModelQuizPreset {
    * @param param.quizList 프리셋에 포함된 퀴즈 목록
    * @returns
    */
-  static async createQuizPreset({ isPrivate, title }: Partial<QuizPresetType>) {
+  static async createQuizPreset({
+    isPrivate,
+    title,
+  }: Pick<QuizPresetType, 'isPrivate' | 'title'>) {
     const createdQuizPresetDocs = await model.create({
       isPrivate,
       title,
@@ -68,8 +70,8 @@ class ModelQuizPreset {
                   createdAt: 0,
                   updatedAt: 0,
                   __v: 0,
-                }
-              }
+                },
+              },
             ],
             as: 'quizList',
           },
@@ -103,7 +105,7 @@ class ModelQuizPreset {
           $match: { _id: new Types.ObjectId(presetPin) },
         },
         {
-          $unwind: '$_id'
+          $unwind: '$_id',
         },
         { $addFields: { presetPin: { $toString: '$_id' } } },
         {
@@ -126,8 +128,8 @@ class ModelQuizPreset {
                   createdAt: 0,
                   updatedAt: 0,
                   __v: 0,
-                }
-              }
+                },
+              },
             ],
             as: 'quizList',
           },
@@ -150,8 +152,14 @@ class ModelQuizPreset {
     return quizPresetList;
   }
 
-  static async deleteQuizPreset(_id: string) {
-    const result = await model.deleteOne({ _id }).exec();
+  /**
+   * 특정 PIN 에 해당되는 퀴즈 프리셋을 제거하는 함수 deleteQuizPreset
+   * @param presetPin 제거하려는 퀴즈 프리셋의 PIN
+   */
+  static async deleteQuizPreset(presetPin: string) {
+    const result = await model
+      .deleteOne({ _id: new Types.ObjectId(presetPin) })
+      .exec();
 
     if (!result.deletedCount)
       throw new BadRequestError('요청하신 PIN 에 해당되는 프리셋이 없습니다');
