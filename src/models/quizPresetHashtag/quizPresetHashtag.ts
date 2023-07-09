@@ -3,12 +3,12 @@ import type { QuizPresetHashtagType } from './model';
 
 class ModelQuizPresetHashtag {
   /**
-   * 퀴즈 프리셋에 새로운 해시태그를 등록하는 함수 registerHashtagToPreset
+   * 퀴즈 프리셋에 새로운 해시태그를 등록하는 함수 createHashtagToPreset
    * @param param.hashtagId 새롭게 등록하고자 하는 Hashtag Id
    * @param param.presetPin 해시태그를 등록하려는 프리셋 PIN
    * @returns
    */
-  static async registerHashtagToPreset({
+  static async createHashtagToPreset({
     hashtagId,
     presetPin,
   }: QuizPresetHashtagType) {
@@ -24,10 +24,10 @@ class ModelQuizPresetHashtag {
    * @param presetPin 퀴즈 프리셋 PIN
    */
   static async getHashtagIdsFromPreset(presetPin: string) {
-    const hashtagIdList = model
-      .find({ presetPin }, { hashtagId: 1 })
+    const hashtagIdList = await model
+      .find<QuizPresetHashtagType['hashtagId'][]>({ presetPin }, { hashtagId: 1, _id: 0 })
       .lean()
-      .exec();
+      .exec()
     return hashtagIdList;
   }
 
@@ -41,7 +41,7 @@ class ModelQuizPresetHashtag {
     hashtagId,
     presetPin,
   }: QuizPresetHashtagType) {
-    const hashtagIdList = model
+    const hashtagIdList = await model
       .deleteOne({ presetPin, hashtagId })
       .lean()
       .exec();
