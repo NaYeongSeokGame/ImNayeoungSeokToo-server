@@ -31,6 +31,24 @@ class ModelHashTag {
       .exec();
     return hashtagContent;
   }
+
+  /**
+   * 컨텐츠를 기반으로 해시태그 ID를 가져오는 함수 getHashtagIdByContent
+   * @param hashtagId 해시태그 ID
+   */
+  static async getHashtagIdByContent(content: string) {
+    const hashtagId = await model
+      .findOne(
+        {
+          content,
+        },
+        { _id: 1 },
+      )
+      .lean()
+      .exec();
+
+    return hashtagId ? hashtagId.toString() : null;
+  }
 }
 
 export default ModelHashTag;
