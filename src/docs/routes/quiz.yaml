@@ -35,6 +35,11 @@ paths:
                   presetPin:
                     type: string
                     description: 프리셋 PIN
+                  hashtagList:
+                    type: array
+                    description: 해시태그 목록
+                    items:
+                      type: string
                   quizList:
                     type: array
                     items:
@@ -116,6 +121,11 @@ paths:
                   type: array
                   items:
                     type: file
+                hashtagContentList:
+                    type: array
+                    description: 퀴즈 프리셋에 추가할 해시태그 목록
+                    items:
+                      type: string
       responses:
         '200':
           description: 새롭게 생성된 프리셋 PIN
@@ -179,3 +189,8 @@ paths:
                     presetPin:
                       type: string
                       description: 프리셋 PIN
+                    hashtagContentList:
+                      type: array
+                      description: 퀴즈 프리셋에 추가할 해시태그 목록
+                      items:
+                        type: string
