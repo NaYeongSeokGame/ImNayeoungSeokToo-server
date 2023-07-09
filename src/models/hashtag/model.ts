@@ -9,7 +9,7 @@ export interface HashtagType {
 
 export const Hashtag = new Schema<HashtagType>(
   {
-    content: { type: String, required: true },
+    content: { type: String, required: true, minlength: 3, maxlength: 10 },
   },
   {
     versionKey: false,
