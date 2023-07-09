@@ -12,8 +12,7 @@ export const Hashtag = new Schema<HashtagType>(
     content: { type: String, required: true },
   },
   {
-    collection: 'hashtags',
-    timestamps: true,
+    versionKey: false,
   },
 );
 

@@ -16,6 +16,7 @@ export const QuizPresetHashtag = new Schema<QuizPresetHashtagType>(
   {
     collection: 'quizPresetHashtags',
     timestamps: true,
+    versionKey: false,
   },
 );
 

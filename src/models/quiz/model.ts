@@ -18,6 +18,7 @@ export const Quiz = new Schema<QuizType>(
   {
     collection: 'quizzes',
     timestamps: true,
+    versionKey: false,
   },
 );
 
