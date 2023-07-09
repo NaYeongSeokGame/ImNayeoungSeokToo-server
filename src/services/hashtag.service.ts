@@ -11,8 +11,9 @@ class ServiceHashtag {
       presetPin,
     );
     const hashtagList = await Promise.all(
-      hashtagIdList.map(({ hashtagId }) =>
-        ModelHashTag.getHashtagContentById(hashtagId),
+        hashtagIdList.map((hashtagId) => {
+          return ModelHashTag.getHashtagContentById(hashtagId)
+        }
       ),
     );
     return hashtagList;
@@ -57,7 +58,7 @@ class ServiceHashtag {
       presetPin,
     );
     await Promise.all(
-      hashtagIdList.map(({ hashtagId }) =>
+      hashtagIdList.map((hashtagId) =>
         ModelQuizPresetHashtag.deleteHashtagIdsFromPreset({
           hashtagId,
           presetPin,

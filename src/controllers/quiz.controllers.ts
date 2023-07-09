@@ -87,7 +87,7 @@ class QuizController {
       }),
     );
 
-    return res.status(200).json(...presetPinWithHashTag);
+    return res.status(200).json(presetPinWithHashTag);
   }
   /**
    * 새로운 퀴즈 프리셋을 생성하는 함수 postCreateQuizPreset
