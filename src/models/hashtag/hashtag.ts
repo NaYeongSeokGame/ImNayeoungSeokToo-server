@@ -1,7 +1,6 @@
 import { Types } from 'mongoose';
 
 import model from './model';
-import type { HashtagType } from './model';
 
 class ModelHashTag {
   /**
@@ -25,11 +24,11 @@ class ModelHashTag {
         {
           _id: new Types.ObjectId(hashtagId),
         },
-        { content: 1 },
+        { content: 1, _id: 0 },
       )
       .lean()
       .exec();
-    return hashtagContent;
+    return hashtagContent?.content ?? null;
   }
 
   /**
@@ -47,7 +46,7 @@ class ModelHashTag {
       .lean()
       .exec();
 
-    return hashtagId ? hashtagId.toString() : null;
+    return hashtagId?._id.toString() ?? null;
   }
 }
 
