@@ -106,7 +106,7 @@ class QuizController {
         '하나의 프리셋에 퀴즈는 최대 9개까지 가능합니다.',
       );
 
-    const { isPrivate = false, title, answers, hashtag = [] } = req.body;
+    const { isPrivate = false, title, answers, hashtagContentList = [] } = req.body;
 
     if (!title)
       throw new BadRequestError('프리셋에 이름은 꼭 지어주셔야 합니다.');
@@ -124,7 +124,7 @@ class QuizController {
 
     await HashtagService.registerHashtagToPreset({
       presetPin: createdQuizPresetPin,
-      hashtagContentList: hashtag,
+      hashtagContentList,
     });
 
     return res.status(200).json({ presetPin: createdQuizPresetPin });

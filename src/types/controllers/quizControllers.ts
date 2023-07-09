@@ -2,7 +2,7 @@ export type PostCreateQuizPresetReqBodyType = {
   answers: string[];
   title: string;
   isPrivate: boolean | undefined;
-  hashtag: string[]
+  hashtagContentList: string[]
 };
 
 export type DeleteQuizPresetReqQueryType = {
