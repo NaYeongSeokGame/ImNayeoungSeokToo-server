@@ -16,10 +16,6 @@ type WrapperFunc = (
 
 export const errorCatchHandler =
   (fn: WrapperFunc) =>
-  (
-    req: Request<any, any, any, any>,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  (req: Request<any, any, any, any>, res: Response, next: NextFunction) => {
     return fn(req, res, next).catch(next);
   };

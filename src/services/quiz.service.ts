@@ -49,7 +49,7 @@ class ServiceQuiz {
     presetPin: string;
   }) {
     await Promise.all(
-        imageUrls.map(async (imageUrl) => {
+      imageUrls.map(async (imageUrl) => {
         await S3StorageModule.deleteFileFromS3(imageUrl);
       }),
     );

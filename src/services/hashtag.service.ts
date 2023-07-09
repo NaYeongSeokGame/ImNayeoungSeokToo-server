@@ -11,10 +11,9 @@ class ServiceHashtag {
       presetPin,
     );
     const hashtagList = await Promise.all(
-        hashtagIdList.map((hashtagId) => {
-          return ModelHashTag.getHashtagContentById(hashtagId)
-        }
-      ),
+      hashtagIdList.map((hashtagId) => {
+        return ModelHashTag.getHashtagContentById(hashtagId);
+      }),
     );
     return hashtagList;
   }

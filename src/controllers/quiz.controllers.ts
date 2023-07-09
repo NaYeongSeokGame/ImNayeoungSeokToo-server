@@ -106,7 +106,12 @@ class QuizController {
         '하나의 프리셋에 퀴즈는 최대 9개까지 가능합니다.',
       );
 
-    const { isPrivate = false, title, answers, hashtagContentList = [] } = req.body;
+    const {
+      isPrivate = false,
+      title,
+      answers,
+      hashtagContentList = [],
+    } = req.body;
 
     if (!title)
       throw new BadRequestError('프리셋에 이름은 꼭 지어주셔야 합니다.');
@@ -144,8 +149,8 @@ class QuizController {
 
     const quizList = await ModelQuiz.getQuizListInPreset(presetPin);
 
-    if (!quizList.length) 
-      throw new BadRequestError('유효하지 않은 PIN 번호입니다.')
+    if (!quizList.length)
+      throw new BadRequestError('유효하지 않은 PIN 번호입니다.');
 
     const imageUrlList = quizList.map(({ imageUrl }) => imageUrl);
 

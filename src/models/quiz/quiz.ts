@@ -35,7 +35,7 @@ class ModelQuiz {
 
   /**
    * 특정 퀴즈 프리셋 PIN 에 포함된 퀴즈 목록을 가져오는 함수 getQuizListInPreset
-   * @param includedPresetPin 퀴즈 프리셋 PIN 
+   * @param includedPresetPin 퀴즈 프리셋 PIN
    */
   static async getQuizListInPreset(includedPresetPin: string) {
     const quizListInPreset = await model
@@ -48,7 +48,7 @@ class ModelQuiz {
 
   /**
    * 특정 퀴즈 프리셋 PIN 에 등록된 퀴즈 중, 첫 번째 퀴즈의 imageUrl을 반환하는 함수 getThumbnailImageUrl
-   * @param includedPresetPin 퀴즈 프리셋 PIN 
+   * @param includedPresetPin 퀴즈 프리셋 PIN
    */
   static async getThumbnailImageUrl(includedPresetPin: string) {
     const quizListInPreset = await model
@@ -60,7 +60,7 @@ class ModelQuiz {
 
   /**
    * 특정 퀴즈 프리셋 PIN 에 포함된 퀴즈를 일괄로 삭제하는 함수 deleteQuizInPreset
-   * @param includedPresetPin 삭제하고자 하는 퀴즈 프리셋 PIN 
+   * @param includedPresetPin 삭제하고자 하는 퀴즈 프리셋 PIN
    */
   static async deleteQuizInPreset(includedPresetPin: string) {
     await model.deleteMany({ includedPresetPin }).exec();
