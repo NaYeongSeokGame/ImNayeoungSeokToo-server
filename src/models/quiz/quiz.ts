@@ -19,6 +19,7 @@ class ModelQuiz {
       imageUrl,
       answer,
       includedPresetPin,
+      hint,
     });
     return createdQuizPresetDocs;
   }
@@ -28,8 +29,17 @@ class ModelQuiz {
    * @param _id 업데이트 하고자 하는 퀴즈의 _id field
    * @param updatedPreset 업데이트 할 퀴즈의 정보
    */
-  static async updateQuizPreset(_id: string, updatedQuiz: Partial<QuizType>) {
+  static async updateQuizPreset(_id: string, updatedQuiz: Omit<Partial<QuizType>, '_id'>) {
     await model.updateOne({ _id }, { $set: { ...updatedQuiz } }).exec();
+  }
+
+  /**
+   * 기존의 퀴즈를 새롭게 덮어씌우는 함수 replaceQuizPreset
+   * @param _id 교체하고자 하는 퀴즈의 _id
+   * @param replacedQuiz 교체될 새로운 퀴즈의 정보
+   */
+  static async replaceQuizPreset(_id: string, replacedQuiz: QuizType) {
+    await model.replaceOne({ _id }, replacedQuiz);
   }
 
   /**
