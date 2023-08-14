@@ -163,6 +163,16 @@ class QuizController {
 
     return res.sendStatus(200);
   }
+
+  static async updateQuizPreset(req: Request, res: Response) {
+    const {
+      isPrivate = false,
+      title,
+      replacedQuizList = [],
+      hashtagContentList = [],
+    } = req.body;
+  }
+
 }
 
 export default QuizController;

@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 
 import { BadRequestError } from '@/utils/definedErrors';
+import generatePin from '@/utils/generatePin';
 
 import model from './model';
 import type { QuizPresetType, QuizPresetWithInfoType } from './model';
@@ -164,6 +165,16 @@ class ModelQuizPreset {
     if (!result.deletedCount)
       throw new BadRequestError('요청하신 PIN 에 해당되는 프리셋이 없습니다');
   }
+
+  /**
+   * 새롭게 생성할 퀴즈 프리셋 PIN 번호를 생성하는 함수 generateQuizPresetPin
+   * @returns 새롭게 생성된 PIN 넘버
+   */
+  static async generateQuizPresetPin(): Promise<string> {
+    const generatedPin = generatePin();
+    const isExist = await ModelQuizPreset.getQuizPresetById(generatedPin);
+    return isExist ? await this.generateQuizPresetPin() : generatedPin;
+}
 }
 
 export default ModelQuizPreset;
