@@ -6,7 +6,7 @@ import { Schema, model } from 'mongoose';
 export interface QuizType {
   imageUrl: string;
   answer: string;
-  hint: string;
+  hint?: string;
   includedPresetPin: string;
 }
 

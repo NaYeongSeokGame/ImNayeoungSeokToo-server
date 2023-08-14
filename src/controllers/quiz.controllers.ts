@@ -37,7 +37,7 @@ class QuizController {
     return res.status(200).json({ ...presetData, quizList, hashtagList });
   }
   /**
-   * 특정 프리셋 PIN 넘버에 맞는 데이터를 반환하는 함수 getQuizPreset
+   * 특정 프리셋 PIN 넘버의 퀴즈 정답 목록을 반환하는 함수 getQuizAnswerList
    */
   static async getQuizAnswerList(req: Request, res: Response) {
     const { presetPin } = req.query;

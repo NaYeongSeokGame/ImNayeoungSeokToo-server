@@ -13,6 +13,7 @@ class ModelQuiz {
     imageUrl,
     answer,
     includedPresetPin,
+    hint,
   }: QuizType) {
     const createdQuizPresetDocs = await model.create({
       imageUrl,
