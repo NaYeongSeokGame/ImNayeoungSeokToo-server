@@ -37,7 +37,7 @@ class ModelQuiz {
    */
   static async getQuizListInPreset(includedPresetPin: string) {
     const quizListInPreset = await model
-      .find({ includedPresetPin }, { imageUrl: 1, answer: 1, _id: 0 })
+      .find({ includedPresetPin }, { imageUrl: 1, answer: 1, hint: 1, _id: 0 })
       .sort({ createdAt: -1 })
       .lean()
       .exec();
