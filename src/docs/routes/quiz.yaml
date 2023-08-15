@@ -14,7 +14,13 @@ paths:
           required: true
           description: 퀴즈 프리셋 PIN
           schema:
-            type: string
+              type: string
+        - name: presetPin
+          in: query
+          required: true
+          description: 퀴즈 프리셋 PIN
+          schema:
+              type: string
       responses:
         '200':
           description: 퀴즈 프리셋 데이터 전송
@@ -51,6 +57,9 @@ paths:
                         answer:
                           type: string
                           description: 퀴즈 정답
+                        hint:
+                          type: string
+                          description: 퀴즈 힌트
         '400':
           description: 잘못된 요청 오류
           content:
@@ -112,6 +121,12 @@ paths:
                 answers:
                   required: true
                   description: 퀴즈 프리셋 내 퀴즈 정답 목록
+                  type: array
+                  items:
+                    type: string
+                hints:
+                  required: true
+                  description: 퀴즈 프리셋 내 퀴즈 힌트 목록
                   type: array
                   items:
                     type: string
