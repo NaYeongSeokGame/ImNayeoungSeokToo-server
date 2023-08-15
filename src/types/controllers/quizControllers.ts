@@ -13,3 +13,7 @@ export type GetQuizPresetListReqQueryType = {
   page: number;
   limit: number;
 };
+
+export type GetQuizPresetReqQueryType = {
+  presetPin: string | string[];
+};
