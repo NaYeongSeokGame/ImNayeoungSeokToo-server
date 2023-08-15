@@ -29,7 +29,10 @@ class ModelQuiz {
    * @param _id 업데이트 하고자 하는 퀴즈의 _id field
    * @param updatedPreset 업데이트 할 퀴즈의 정보
    */
-  static async updateQuizPreset(_id: string, updatedQuiz: Omit<Partial<QuizType>, '_id'>) {
+  static async updateQuizPreset(
+    _id: string,
+    updatedQuiz: Omit<Partial<QuizType>, '_id'>,
+  ) {
     await model.updateOne({ _id }, { $set: { ...updatedQuiz } }).exec();
   }
 

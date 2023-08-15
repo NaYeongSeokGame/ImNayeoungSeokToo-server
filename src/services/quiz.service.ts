@@ -28,7 +28,7 @@ class ServiceQuiz {
           presetPin,
         });
         const currentIndexAnswer = answers[index];
-        const currentIndexHint = hints[index]
+        const currentIndexHint = hints[index];
         await ModelQuiz.createQuizPreset({
           imageUrl,
           answer: currentIndexAnswer,

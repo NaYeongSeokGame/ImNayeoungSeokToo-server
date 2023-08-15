@@ -6,7 +6,7 @@ import { Schema, model } from 'mongoose';
 export interface QuizPresetType {
   isPrivate: boolean;
   title: string;
-  presetPin: string,
+  presetPin: string;
 }
 
 /**

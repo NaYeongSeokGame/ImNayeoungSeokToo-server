@@ -152,7 +152,7 @@ class QuizController {
 
     await ServiceQuiz.registerQuizWithImage({
       answers: Array.isArray(answers) ? answers : [answers],
-      hints : Array.isArray(hints) ? hints : [hints],
+      hints: Array.isArray(hints) ? hints : [hints],
       imageFiles,
       presetPin,
     });
