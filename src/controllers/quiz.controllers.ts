@@ -7,6 +7,7 @@ import ServiceQuiz from '@/services/quiz.service';
 import {
   DeleteQuizPresetReqQueryType,
   GetQuizPresetListReqQueryType,
+  GetQuizPresetReqQueryType,
   PostCreateQuizPresetReqBodyType,
 } from '@/type/controllers/quizControllers';
 import { BadRequestError } from '@/utils/definedErrors';
@@ -15,27 +16,51 @@ class QuizController {
   /**
    * 특정 프리셋 PIN 넘버에 맞는 데이터를 반환하는 함수 getQuizPreset
    */
-  static async getQuizPreset(req: Request, res: Response) {
+  static async getQuizPreset(
+    req: Request<unknown, unknown, unknown, GetQuizPresetReqQueryType>,
+    res: Response,
+  ) {
     const { presetPin } = req.query;
 
     if (!presetPin)
       throw new BadRequestError('요청에 담긴 프리셋 PIN 이 없습니다.');
 
-    if (typeof presetPin !== 'string')
-      throw new BadRequestError('유효하지 않은 프리셋 PIN 번호입니다.');
+    if (typeof presetPin === 'string') {
+      const presetData = await ModelQuizPreset.getQuizPresetById(presetPin);
 
-    const presetData = await ModelQuizPreset.getQuizPresetById(presetPin);
+      if (!presetData)
+        throw new BadRequestError('해당 PIN 번호를 가진 프리셋이 없습니다.');
 
-    if (!presetData)
-      throw new BadRequestError('해당 PIN 번호를 가진 프리셋이 없습니다.');
+      const quizList = await ModelQuiz.getQuizListInPreset(presetPin);
+      const hashtagList = await ServiceHashtag.getHashtagListByPresetId(
+        presetPin,
+      );
 
-    const quizList = await ModelQuiz.getQuizListInPreset(presetPin);
-    const hashtagList = await ServiceHashtag.getHashtagListByPresetId(
-      presetPin,
-    );
+      return res.status(200).json({ ...presetData, quizList, hashtagList });
+    }
 
-    return res.status(200).json({ ...presetData, quizList, hashtagList });
+    if (Array.isArray(presetPin)) {
+      const presetDataList = await Promise.all(
+        presetPin.map(async (pin) => {
+          const presetData = await ModelQuizPreset.getQuizPresetById(pin);
+          if (!presetData)
+            throw new BadRequestError(
+              '해당 PIN 번호를 가진 프리셋이 없습니다.',
+            );
+          const quizList = await ModelQuiz.getQuizListInPreset(pin);
+          const hashtagList = await ServiceHashtag.getHashtagListByPresetId(
+            pin,
+          );
+          return { ...presetData, quizList, hashtagList };
+        }),
+      );
+
+      return res.status(200).json({ ...presetDataList });
+    }
+
+    throw new BadRequestError('유효하지 않은 프리셋 PIN 번호입니다.');
   }
+
   /**
    * 특정 프리셋 PIN 넘버의 퀴즈 정답 목록을 반환하는 함수 getQuizAnswerList
    */
@@ -116,7 +141,10 @@ class QuizController {
     if (!title)
       throw new BadRequestError('프리셋에 이름은 꼭 지어주셔야 합니다.');
 
-    const createdQuizPresetPin = await ModelQuizPreset.createQuizPreset({
+    const presetPin = await ModelQuizPreset.generateQuizPresetPin();
+
+    await ModelQuizPreset.createQuizPreset({
+      presetPin,
       isPrivate,
       title,
     });
@@ -124,15 +152,15 @@ class QuizController {
     await ServiceQuiz.registerQuizWithImage({
       answers,
       imageFiles,
-      presetPin: createdQuizPresetPin,
+      presetPin,
     });
 
     await ServiceHashtag.registerHashtagToPreset({
-      presetPin: createdQuizPresetPin,
+      presetPin,
       hashtagContentList,
     });
 
-    return res.status(200).json({ presetPin: createdQuizPresetPin });
+    return res.json({ presetPin });
   }
 
   /**
@@ -172,7 +200,6 @@ class QuizController {
       hashtagContentList = [],
     } = req.body;
   }
-
 }
 
 export default QuizController;
