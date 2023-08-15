@@ -1,9 +1,10 @@
 import { Types } from 'mongoose';
 
 import { BadRequestError } from '@/utils/definedErrors';
+import generatePin from '@/utils/generatePin';
 
 import model from './model';
-import type { QuizPresetType, QuizPresetWithInfoType } from './model';
+import { type QuizPresetType, type QuizPresetWithThumbnailType } from './model';
 
 class ModelQuizPreset {
   /**
@@ -14,26 +15,27 @@ class ModelQuizPreset {
    * @returns
    */
   static async createQuizPreset({
+    presetPin,
     isPrivate,
     title,
-  }: Pick<QuizPresetType, 'isPrivate' | 'title'>) {
-    const createdQuizPresetDocs = await model.create({
+  }: QuizPresetType) {
+    await model.create({
+      presetPin,
       isPrivate,
       title,
     });
-    return createdQuizPresetDocs._id.toString();
   }
 
   /**
    * 기존의 퀴즈 프리셋을 업데이트 하는 함수 updateQuizPreset
-   * @param _id
-   * @param updatedPreset
+   * @param presetPin 업데이트 하고자 할 presetPin
+   * @param updatedPreset 업데이트 하려는 프리셋 데이터
    */
   static async updateQuizPreset(
-    _id: string,
+    presetPin: string,
     updatedPreset: Partial<QuizPresetType>,
   ) {
-    await model.updateOne({ _id }, { $set: { ...updatedPreset } }).exec();
+    await model.updateOne({ presetPin }, { $set: { ...updatedPreset } }).exec();
   }
 
   /**
@@ -43,13 +45,12 @@ class ModelQuizPreset {
    */
   static async getQuizPreset({ page, limit }: { page: number; limit: number }) {
     const quizPresetList = await model
-      .aggregate<QuizPresetWithInfoType>([
+      .aggregate<QuizPresetWithThumbnailType>([
         {
           $match: { isPrivate: false },
         },
         { $skip: (page - 1) * limit },
         { $limit: limit },
-        { $addFields: { presetPin: { $toString: '$_id' } } },
         {
           $lookup: {
             from: 'quizzes',
@@ -100,14 +101,13 @@ class ModelQuizPreset {
    */
   static async getQuizPresetById(presetPin: string) {
     const [quizPresetList] = await model
-      .aggregate<QuizPresetWithInfoType>([
+      .aggregate<QuizPresetWithThumbnailType>([
         {
-          $match: { _id: new Types.ObjectId(presetPin) },
+          $match: { presetPin },
         },
         {
           $unwind: '$_id',
         },
-        { $addFields: { presetPin: { $toString: '$_id' } } },
         {
           $lookup: {
             from: 'quizzes',
@@ -163,6 +163,16 @@ class ModelQuizPreset {
 
     if (!result.deletedCount)
       throw new BadRequestError('요청하신 PIN 에 해당되는 프리셋이 없습니다');
+  }
+
+  /**
+   * 새롭게 생성할 퀴즈 프리셋 PIN 번호를 생성하는 함수 generateQuizPresetPin
+   * @returns 새롭게 생성된 PIN 넘버
+   */
+  static async generateQuizPresetPin(): Promise<string> {
+    const generatedPin = generatePin();
+    const isExist = await ModelQuizPreset.getQuizPresetById(generatedPin);
+    return isExist ? await this.generateQuizPresetPin() : generatedPin;
   }
 }
 
