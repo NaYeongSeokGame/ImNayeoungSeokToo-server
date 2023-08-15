@@ -14,7 +14,7 @@ class S3StorageModule {
   }): Promise<string> {
     try {
       // TODO : req.files 에서 읽은 Multer File이 아닌, sharp로 변환된 파일을 읽도록 해야 함
-      const originFileName = `${fileData.originalname.split(".")[0]}.webp`
+      const originFileName = `${fileData.originalname.split('.')[0]}.webp`;
       const fileContent: Buffer = fs.readFileSync(`uploads/${originFileName}`);
 
       const params: S3.PutObjectRequest = {
@@ -31,8 +31,8 @@ class S3StorageModule {
 
       await new Promise((resolve, reject) => {
         fs.unlink(`uploads/${originFileName}`, (error) => {
-            return error ? reject(error) : resolve('success');
-        })
+          return error ? reject(error) : resolve('success');
+        });
       });
 
       const cloudFrontUrl = `${process.env.CLOUDFRONT_URL}/preset/${presetPin}/${originFileName}`;

@@ -8,15 +8,18 @@ class ServiceQuiz {
    * @param param.answers 퀴즈의 정답 목록
    * @param param.imageFiles 등록하고자 하는 퀴즈 이미지 Buffer
    * @param param.presetPin 등록하려는 퀴즈 프리셋 PIN
+   * @param param.hints 등록하려는 퀴즈 프리셋 힌트
    */
   static async registerQuizWithImage({
     answers,
     imageFiles,
     presetPin,
+    hints,
   }: {
     answers: string[];
     imageFiles: Express.Multer.File[];
     presetPin: string;
+    hints: (string | null)[];
   }) {
     await Promise.all(
       imageFiles.map(async (imageFile, index) => {
@@ -25,10 +28,12 @@ class ServiceQuiz {
           presetPin,
         });
         const currentIndexAnswer = answers[index];
+        const currentIndexHint = hints[index];
         await ModelQuiz.createQuizPreset({
           imageUrl,
           answer: currentIndexAnswer,
           includedPresetPin: presetPin,
+          hint: currentIndexHint ? currentIndexHint : undefined,
         });
       }),
     );

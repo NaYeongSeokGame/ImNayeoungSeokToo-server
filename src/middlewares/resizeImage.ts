@@ -16,13 +16,13 @@ const midResizeImage = async (
   const imageFiles = req.files as Express.Multer.File[];
 
   // NOTE : 가로 혹은 세로의 길이를 300px 로 고정시킨다. (비례 축소)
-  const MAX_LENGTH = 300; 
+  const MAX_LENGTH = 300;
   try {
     await Promise.all(
       imageFiles.map(async (imageFile) => {
         const fileContent: Buffer = fs.readFileSync(imageFile.path);
 
-        const originFileName = imageFile.originalname.split(".")[0]
+        const originFileName = imageFile.originalname.split('.')[0];
         const { width, height } = await sharp(fileContent).metadata();
         const [smallerWidth, smallerHeight] = [width, height].map((length) =>
           Math.round(Math.min(length ?? MAX_LENGTH, MAX_LENGTH)),
@@ -37,12 +37,12 @@ const midResizeImage = async (
           })
           .toFormat('webp', { quality: 100 })
           .toFile(`uploads/${originFileName}.webp`);
-        
+
         // NOTE : 기존에 저장해두었던 원본 파일은 fs.unlink 를 사용하여 제거
         await new Promise((resolve, reject) => {
-            fs.unlink(`${imageFile.path}`, (error) => {
-               return error ? reject(error) : resolve('success');
-            })
+          fs.unlink(`${imageFile.path}`, (error) => {
+            return error ? reject(error) : resolve('success');
+          });
         });
 
         next();

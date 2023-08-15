@@ -6,6 +6,7 @@ import { Schema, model } from 'mongoose';
 export interface QuizType {
   imageUrl: string;
   answer: string;
+  hint?: string;
   includedPresetPin: string;
 }
 
@@ -13,6 +14,7 @@ export const Quiz = new Schema<QuizType>(
   {
     imageUrl: { type: String, required: true },
     answer: { type: String, required: true },
+    hint: { type: String },
     includedPresetPin: { type: String, required: true },
   },
   {
