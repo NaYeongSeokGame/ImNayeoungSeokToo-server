@@ -1,5 +1,6 @@
 export type PostCreateQuizPresetReqBodyType = {
-  answers: string[];
+  answers: string[] | string;
+  hints: (string | null)[] | (string | null);
   title: string;
   isPrivate: boolean | undefined;
   hashtagContentList: string[];

@@ -135,6 +135,7 @@ class QuizController {
       isPrivate = false,
       title,
       answers,
+      hints,
       hashtagContentList = [],
     } = req.body;
 
@@ -150,7 +151,8 @@ class QuizController {
     });
 
     await ServiceQuiz.registerQuizWithImage({
-      answers,
+      answers: Array.isArray(answers) ? answers : [answers],
+      hints : Array.isArray(hints) ? hints : [hints],
       imageFiles,
       presetPin,
     });
