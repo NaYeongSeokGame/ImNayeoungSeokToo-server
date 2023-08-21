@@ -175,7 +175,7 @@ class QuizController {
       title,
       answers,
       hints,
-      hashtagContentList = [],
+      hashtagList = [],
     } = req.body;
 
     if (!title)
@@ -198,7 +198,7 @@ class QuizController {
 
     await ServiceHashtag.registerHashtagToPreset({
       presetPin,
-      hashtagContentList,
+      hashtagContentList: hashtagList,
     });
 
     return res.json({ presetPin });
