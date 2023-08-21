@@ -126,7 +126,7 @@ class QuizController {
     const { page = '1', limit = '9', keyword, type } = req.query;
     const [pageNum, limitNum] = [page, limit].map(Number);
 
-    if (typeof keyword !== 'string' || typeof type !== 'string' ) {
+    if (typeof keyword !== 'string' || typeof type !== 'string') {
       throw new BadRequestError(
         '퀴즈 프리셋 검색 타입 및 키워드를 요청에 추가해주세요.',
       );
@@ -143,7 +143,11 @@ class QuizController {
       }
       case 'hashtag': {
         const presetDataList =
-          await ServiceHashtag.getQuizPresetByHashtagContent(keyword);
+          await ServiceHashtag.getQuizPresetByHashtagContent({
+            content: keyword,
+            page: pageNum,
+            limit: limitNum,
+          });
         return res.status(200).json(presetDataList);
       }
       default:
