@@ -34,6 +34,21 @@ class ModelQuizPresetHashtag {
   }
 
   /**
+   * 특정 해시태그 ID 를 포함한 퀴즈 프리셋 목록을 가져오는 함수 getPresetListByHashtagId
+   * @param hashtagId 해시태그 ID 
+   */
+    static async getPresetListByHashtagId(hashtagId: string) {
+      const queryResult = await model
+        .find({ hashtagId }, { presetPin: 1, _id: 0 })
+        .lean()
+        .exec();
+  
+      const presetPinList = queryResult.map(({ presetPin }) => presetPin);
+      return presetPinList;
+    }
+  
+
+  /**
    * 프리셋에 등록되었던 해시태그를 삭제하는 함수 deleteHashtagIdsFromPreset
    * @param param.hashtagId 프리셋에서 삭제하려는 Hashtag Id
    * @param param.presetPin 해시태그를 수정하려는 프리셋 PIN
