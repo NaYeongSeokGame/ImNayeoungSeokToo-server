@@ -1,5 +1,3 @@
-import { Types } from 'mongoose';
-
 import model from './model';
 
 class ModelHashTag {
