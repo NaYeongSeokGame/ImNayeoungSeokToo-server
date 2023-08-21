@@ -153,6 +153,67 @@ class ModelQuizPreset {
   }
 
   /**
+   * 퀴즈 프리셋의 제목으로 프리셋 데이터를 불러오는 함수 getQuizPresetByTitle
+   * @param title 검색하려는 퀴즈 프리셋 제목
+   */
+  static async getQuizPresetByTitle({
+    title,
+    page,
+    limit,
+  }: {
+    title: string;
+    page: number;
+    limit: number;
+  }) {
+    const quizPresetList = await model.aggregate<QuizPresetWithThumbnailType>([
+      {
+        $match: { title: { $regex: title, $options: 'i' } },
+      },
+      { $skip: (page - 1) * limit },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: 'quizzes',
+          localField: 'presetPin',
+          foreignField: 'includedPresetPin',
+          pipeline: [
+            {
+              $sort: { createdAt: -1 },
+            },
+            {
+              $limit: 1,
+            },
+            {
+              $project: {
+                _id: 0,
+                answer: 0,
+                includedPresetPin: 0,
+                createdAt: 0,
+                updatedAt: 0,
+                __v: 0,
+              },
+            },
+          ],
+          as: 'quizList',
+        },
+      },
+      {
+        $unwind: '$quizList',
+      },
+      {
+        $project: {
+          title: 1,
+          isPrivate: 1,
+          presetPin: 1,
+          _id: 0,
+          thumbnailUrl: '$quizList.imageUrl',
+        },
+      },
+    ]);
+    return quizPresetList;
+  }
+
+  /**
    * 특정 PIN 에 해당되는 퀴즈 프리셋을 제거하는 함수 deleteQuizPreset
    * @param presetPin 제거하려는 퀴즈 프리셋의 PIN
    */
