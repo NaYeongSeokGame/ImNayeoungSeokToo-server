@@ -2,7 +2,7 @@ import { HashtagType } from '@/models/hashtag';
 import ModelHashTag from '@/models/hashtag/hashtag';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
 import ModelQuizPresetHashtag from '@/models/quizPresetHashtag/quizPresetHashtag';
-import { PaginatedType } from '@/types/util';
+import { type PaginatedType } from '@/types/util';
 
 class ServiceHashtag {
   /**

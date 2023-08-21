@@ -150,12 +150,11 @@ class QuizController {
         return res.status(200).json(presetDataList);
       }
       case 'hashtag': {
-        const presetDataList =
-          await ServiceHashtag.getQuizPresetByHashtag({
-            content: keyword,
-            page: pageNum,
-            limit: limitNum,
-          });
+        const presetDataList = await ServiceHashtag.getQuizPresetByHashtag({
+          content: keyword,
+          page: pageNum,
+          limit: limitNum,
+        });
         return res.status(200).json(presetDataList);
       }
       default:
