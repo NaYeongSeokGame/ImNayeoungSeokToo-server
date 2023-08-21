@@ -132,6 +132,14 @@ class QuizController {
       );
     }
 
+    if (Number.isNaN(pageNum) || Number.isNaN(limitNum))
+      throw new BadRequestError(
+        'page 혹은 limit 값은 반드시 유효한 숫자여야 합니다.',
+      );
+
+    if (pageNum <= 0 || limitNum <= 0)
+      throw new BadRequestError('page 및 limit 값은 반드시 양수여야 합니다.');
+
     switch (type) {
       case 'title': {
         const presetDataList = await ModelQuizPreset.getQuizPresetByTitle({
