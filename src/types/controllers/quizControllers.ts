@@ -18,3 +18,10 @@ export type GetQuizPresetListReqQueryType = {
 export type GetQuizPresetReqQueryType = {
   presetPin: string | string[];
 };
+
+export type GetQuizPresetBySearchReqQueryType = {
+  type: 'title' | 'hashtag';
+  keyword: string;
+  page: number;
+  limit: number;
+}
