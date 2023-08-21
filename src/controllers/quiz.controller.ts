@@ -6,6 +6,7 @@ import ServiceHashtag from '@/services/hashtag.service';
 import ServiceQuiz from '@/services/quiz.service';
 import {
   DeleteQuizPresetReqQueryType,
+  GetQuizPresetBySearchReqQueryType,
   GetQuizPresetListReqQueryType,
   GetQuizPresetReqQueryType,
   PostCreateQuizPresetReqBodyType,
@@ -114,6 +115,44 @@ class QuizController {
 
     return res.status(200).json(presetPinWithHashTag);
   }
+
+  /**
+   * 해시태그, 제목 검색을 통해 퀴즈 프리셋 목록을 불러오는 함수 getQuizPresetListBySearch
+   */
+  static async getQuizPresetListBySearch(
+    req: Request<unknown, unknown, GetQuizPresetBySearchReqQueryType>,
+    res: Response,
+  ) {
+    const { page = '1', limit = '9', keyword, type } = req.query;
+    const [pageNum, limitNum] = [page, limit].map(Number);
+
+    if (typeof keyword !== 'string' || typeof type !== 'string' ) {
+      throw new BadRequestError(
+        '퀴즈 프리셋 검색 타입 및 키워드를 요청에 추가해주세요.',
+      );
+    }
+
+    switch (type) {
+      case 'title': {
+        const presetDataList = await ModelQuizPreset.getQuizPresetByTitle({
+          title: keyword,
+          page: pageNum,
+          limit: limitNum,
+        });
+        return res.status(200).json(presetDataList);
+      }
+      case 'hashtag': {
+        const presetDataList =
+          await ServiceHashtag.getQuizPresetByHashtagContent(keyword);
+        return res.status(200).json(presetDataList);
+      }
+      default:
+        throw new BadRequestError(
+          '퀴즈 프리셋 검색 타입은 title, hashtag 만 가능합니다.',
+        );
+    }
+  }
+
   /**
    * 새로운 퀴즈 프리셋을 생성하는 함수 postCreateQuizPreset
    */
@@ -192,15 +231,6 @@ class QuizController {
     await ServiceHashtag.deleteHashtagOfPreset(presetPin);
 
     return res.sendStatus(200);
-  }
-
-  static async updateQuizPreset(req: Request, res: Response) {
-    const {
-      isPrivate = false,
-      title,
-      replacedQuizList = [],
-      hashtagContentList = [],
-    } = req.body;
   }
 }
 
