@@ -151,7 +151,7 @@ class QuizController {
       }
       case 'hashtag': {
         const presetDataList =
-          await ServiceHashtag.getQuizPresetByHashtagContent({
+          await ServiceHashtag.getQuizPresetByHashtag({
             content: keyword,
             page: pageNum,
             limit: limitNum,

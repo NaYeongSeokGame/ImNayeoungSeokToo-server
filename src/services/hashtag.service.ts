@@ -1,6 +1,5 @@
 import { HashtagType } from '@/models/hashtag';
 import ModelHashTag from '@/models/hashtag/hashtag';
-import { type QuizPresetWithThumbnailType } from '@/models/quizPreset';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
 import ModelQuizPresetHashtag from '@/models/quizPresetHashtag/quizPresetHashtag';
 import { PaginatedType } from '@/types/util';
@@ -70,7 +69,7 @@ class ServiceHashtag {
     );
   }
 
-  static async getQuizPresetByHashtagContent({
+  static async getQuizPresetByHashtag({
     content,
     page,
     limit,
@@ -87,7 +86,7 @@ class ServiceHashtag {
       },
     );
 
-    const presetDataList: QuizPresetWithThumbnailType[] = await Promise.all(
+    const presetDataList = await Promise.all(
       presetPinList.map((presetPin) =>
         ModelQuizPreset.getQuizPresetById(presetPin),
       ),
