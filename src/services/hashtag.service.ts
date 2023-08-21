@@ -1,4 +1,6 @@
 import ModelHashTag from '@/models/hashtag/hashtag';
+import { type QuizPresetWithThumbnailType } from '@/models/quizPreset';
+import ModelQuizPreset from '@/models/quizPreset/quizPreset';
 import ModelQuizPresetHashtag from '@/models/quizPresetHashtag/quizPresetHashtag';
 
 class ServiceHashtag {
@@ -11,9 +13,9 @@ class ServiceHashtag {
       presetPin,
     );
     const hashtagList = await Promise.all(
-      hashtagIdList.map((hashtagId) => {
-        return ModelHashTag.getHashtagContentById(hashtagId);
-      }),
+      hashtagIdList.map((hashtagId) =>
+        ModelHashTag.getHashtagContentById(hashtagId),
+      ),
     );
     return hashtagList;
   }
@@ -64,6 +66,26 @@ class ServiceHashtag {
         }),
       ),
     );
+  }
+
+  static async getQuizPresetByHashtagContent(hashtagContent: string) {
+    const hashtagId = await ModelHashTag.getHashtagIdByContent(
+      hashtagContent,
+    );
+
+    if (!hashtagId) return [];
+
+    const presetPinList = await ModelQuizPresetHashtag.getPresetListByHashtagId(
+      hashtagId,
+    );
+
+    const presetDataList: QuizPresetWithThumbnailType[] = await Promise.all(
+      presetPinList.map((presetPin) =>
+        ModelQuizPreset.getQuizPresetById(presetPin),
+      ),
+    );
+
+    return presetDataList;
   }
 }
 
