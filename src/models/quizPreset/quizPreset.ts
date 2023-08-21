@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 
+import { type PaginatedType } from '@/types/util';
 import { BadRequestError } from '@/utils/definedErrors';
 import generatePin from '@/utils/generatePin';
 
@@ -43,7 +44,7 @@ class ModelQuizPreset {
    * @param param.page 불러올 페이지
    * @param param.limit 한 페이지 당 불러올 document 수량
    */
-  static async getQuizPreset({ page, limit }: { page: number; limit: number }) {
+  static async getQuizPreset({ page, limit }: PaginatedType) {
     const quizPresetList = await model
       .aggregate<QuizPresetWithThumbnailType>([
         {
@@ -160,11 +161,7 @@ class ModelQuizPreset {
     title,
     page,
     limit,
-  }: {
-    title: string;
-    page: number;
-    limit: number;
-  }) {
+  }: PaginatedType<Pick<QuizPresetType, 'title'>>) {
     const quizPresetList = await model.aggregate<QuizPresetWithThumbnailType>([
       {
         $match: { title: { $regex: title, $options: 'i' } },

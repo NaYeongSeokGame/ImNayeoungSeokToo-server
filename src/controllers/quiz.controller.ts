@@ -10,7 +10,7 @@ import {
   GetQuizPresetListReqQueryType,
   GetQuizPresetReqQueryType,
   PostCreateQuizPresetReqBodyType,
-} from '@/type/controllers/quizControllers';
+} from '@/types/controllers/quizControllers';
 import { BadRequestError } from '@/utils/definedErrors';
 
 class QuizController {

@@ -1,3 +1,5 @@
+import { type PaginatedType } from '../util';
+
 export type PostCreateQuizPresetReqBodyType = {
   answers: string[] | string;
   hints: (string | null)[] | (string | null);
@@ -10,18 +12,13 @@ export type DeleteQuizPresetReqQueryType = {
   presetPin: string | undefined;
 };
 
-export type GetQuizPresetListReqQueryType = {
-  page: number;
-  limit: number;
-};
+export type GetQuizPresetListReqQueryType = PaginatedType;
 
 export type GetQuizPresetReqQueryType = {
   presetPin: string | string[];
 };
 
-export type GetQuizPresetBySearchReqQueryType = {
+export type GetQuizPresetBySearchReqQueryType = PaginatedType<{
   type: 'title' | 'hashtag';
   keyword: string;
-  page: number;
-  limit: number;
-}
+}>;
