@@ -1,10 +1,52 @@
-import { Types } from 'mongoose';
+import { type PipelineStage, Types } from 'mongoose';
 
+import { type PaginatedType } from '@/types/util';
 import { BadRequestError } from '@/utils/definedErrors';
 import generatePin from '@/utils/generatePin';
 
 import model from './model';
 import { type QuizPresetType, type QuizPresetWithThumbnailType } from './model';
+
+const quizPipeline: PipelineStage[] = [
+  {
+    $lookup: {
+      from: 'quizzes',
+      localField: 'presetPin',
+      foreignField: 'includedPresetPin',
+      pipeline: [
+        {
+          $sort: { createdAt: -1 },
+        },
+        {
+          $limit: 1,
+        },
+        {
+          $project: {
+            _id: 0,
+            answer: 0,
+            includedPresetPin: 0,
+            createdAt: 0,
+            updatedAt: 0,
+            __v: 0,
+          },
+        },
+      ],
+      as: 'quizList',
+    },
+  },
+  {
+    $unwind: '$quizList',
+  },
+  {
+    $project: {
+      title: 1,
+      isPrivate: 1,
+      presetPin: 1,
+      _id: 0,
+      thumbnailUrl: '$quizList.imageUrl',
+    },
+  },
+];
 
 class ModelQuizPreset {
   /**
@@ -43,7 +85,7 @@ class ModelQuizPreset {
    * @param param.page 불러올 페이지
    * @param param.limit 한 페이지 당 불러올 document 수량
    */
-  static async getQuizPreset({ page, limit }: { page: number; limit: number }) {
+  static async getQuizPreset({ page, limit }: PaginatedType) {
     const quizPresetList = await model
       .aggregate<QuizPresetWithThumbnailType>([
         {
@@ -51,44 +93,7 @@ class ModelQuizPreset {
         },
         { $skip: (page - 1) * limit },
         { $limit: limit },
-        {
-          $lookup: {
-            from: 'quizzes',
-            localField: 'presetPin',
-            foreignField: 'includedPresetPin',
-            pipeline: [
-              {
-                $sort: { createdAt: -1 },
-              },
-              {
-                $limit: 1,
-              },
-              {
-                $project: {
-                  _id: 0,
-                  answer: 0,
-                  includedPresetPin: 0,
-                  createdAt: 0,
-                  updatedAt: 0,
-                  __v: 0,
-                },
-              },
-            ],
-            as: 'quizList',
-          },
-        },
-        {
-          $unwind: '$quizList',
-        },
-        {
-          $project: {
-            title: 1,
-            isPrivate: 1,
-            presetPin: 1,
-            _id: 0,
-            thumbnailUrl: '$quizList.imageUrl',
-          },
-        },
+        ...quizPipeline,
       ])
       .exec();
     return quizPresetList;
@@ -108,47 +113,30 @@ class ModelQuizPreset {
         {
           $unwind: '$_id',
         },
-        {
-          $lookup: {
-            from: 'quizzes',
-            localField: 'presetPin',
-            foreignField: 'includedPresetPin',
-            pipeline: [
-              {
-                $sort: { createdAt: -1 },
-              },
-              {
-                $limit: 1,
-              },
-              {
-                $project: {
-                  _id: 0,
-                  answer: 0,
-                  includedPresetPin: 0,
-                  createdAt: 0,
-                  updatedAt: 0,
-                  __v: 0,
-                },
-              },
-            ],
-            as: 'quizList',
-          },
-        },
-        {
-          $unwind: '$quizList',
-        },
-        {
-          $project: {
-            title: 1,
-            isPrivate: 1,
-            presetPin: 1,
-            _id: 0,
-            thumbnailUrl: '$quizList.imageUrl',
-          },
-        },
+        ...quizPipeline,
       ])
       .exec();
 
+    return quizPresetList;
+  }
+
+  /**
+   * 퀴즈 프리셋의 제목으로 프리셋 데이터를 불러오는 함수 getQuizPresetByTitle
+   * @param title 검색하려는 퀴즈 프리셋 제목
+   */
+  static async getQuizPresetByTitle({
+    title,
+    page,
+    limit,
+  }: PaginatedType<Pick<QuizPresetType, 'title'>>) {
+    const quizPresetList = await model.aggregate<QuizPresetWithThumbnailType>([
+      {
+        $match: { title: { $regex: title, $options: 'i' } },
+      },
+      { $skip: (page - 1) * limit },
+      { $limit: limit },
+      ...quizPipeline,
+    ]);
     return quizPresetList;
   }
 

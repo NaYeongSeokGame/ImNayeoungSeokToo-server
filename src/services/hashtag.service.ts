@@ -1,5 +1,8 @@
+import { HashtagType } from '@/models/hashtag';
 import ModelHashTag from '@/models/hashtag/hashtag';
+import ModelQuizPreset from '@/models/quizPreset/quizPreset';
 import ModelQuizPresetHashtag from '@/models/quizPresetHashtag/quizPresetHashtag';
+import { type PaginatedType } from '@/types/util';
 
 class ServiceHashtag {
   /**
@@ -11,9 +14,9 @@ class ServiceHashtag {
       presetPin,
     );
     const hashtagList = await Promise.all(
-      hashtagIdList.map((hashtagId) => {
-        return ModelHashTag.getHashtagContentById(hashtagId);
-      }),
+      hashtagIdList.map((hashtagId) =>
+        ModelHashTag.getHashtagContentById(hashtagId),
+      ),
     );
     return hashtagList;
   }
@@ -64,6 +67,32 @@ class ServiceHashtag {
         }),
       ),
     );
+  }
+
+  static async getQuizPresetByHashtag({
+    content,
+    page,
+    limit,
+  }: PaginatedType<Pick<HashtagType, 'content'>>) {
+    const hashtagId = await ModelHashTag.getHashtagIdByContent(content);
+
+    if (!hashtagId) return [];
+
+    const presetPinList = await ModelQuizPresetHashtag.getPresetListByHashtagId(
+      {
+        hashtagId,
+        page,
+        limit,
+      },
+    );
+
+    const presetDataList = await Promise.all(
+      presetPinList.map((presetPin) =>
+        ModelQuizPreset.getQuizPresetById(presetPin),
+      ),
+    );
+
+    return presetDataList;
   }
 }
 
