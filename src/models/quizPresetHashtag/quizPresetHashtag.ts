@@ -1,3 +1,5 @@
+import { PaginatedType } from '@/types/util';
+
 import model from './model';
 import type { QuizPresetHashtagType } from './model';
 
@@ -31,6 +33,26 @@ class ModelQuizPresetHashtag {
 
     const hashtagIdList = queryResult.map(({ hashtagId }) => hashtagId);
     return hashtagIdList;
+  }
+
+  /**
+   * 특정 해시태그 ID 를 포함한 퀴즈 프리셋 목록을 가져오는 함수 getPresetListByHashtagId
+   * @param hashtagId 해시태그 ID
+   */
+  static async getPresetListByHashtagId({
+    hashtagId,
+    page,
+    limit,
+  }: PaginatedType<Pick<QuizPresetHashtagType, 'hashtagId'>>) {
+    const queryResult = await model
+      .find({ hashtagId }, { presetPin: 1, _id: 0 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean()
+      .exec();
+
+    const presetPinList = queryResult.map(({ presetPin }) => presetPin);
+    return presetPinList;
   }
 
   /**

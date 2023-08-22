@@ -1,5 +1,3 @@
-import { Types } from 'mongoose';
-
 import model from './model';
 
 class ModelHashTag {
@@ -20,12 +18,7 @@ class ModelHashTag {
    */
   static async getHashtagContentById(hashtagId: string) {
     const hashtagContent = await model
-      .findOne(
-        {
-          _id: new Types.ObjectId(hashtagId),
-        },
-        { content: 1, _id: 0 },
-      )
+      .findById(hashtagId, { content: 1, _id: 0 })
       .lean()
       .exec();
     return hashtagContent?.content ?? null;
@@ -33,7 +26,7 @@ class ModelHashTag {
 
   /**
    * 컨텐츠를 기반으로 해시태그 ID를 가져오는 함수 getHashtagIdByContent
-   * @param hashtagId 해시태그 ID
+   * @param content 해시태그 컨텐츠
    */
   static async getHashtagIdByContent(content: string) {
     const hashtagId = await model

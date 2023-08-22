@@ -72,6 +72,78 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/quiz/search:
+    get:
+      summary: 제목 혹은 해시태그로 퀴즈 프리셋 목록 검색
+      tags:
+        - Quiz
+      parameters:
+        - name: type
+          in: query
+          required: true
+          description: 검색 타입
+          schema:
+              type: string
+              enum: [title, hashtag]
+        - name: keyword
+          in: query
+          required: true
+          description: 검색하고자 하는 키워드
+          schema:
+              type: string
+      responses:
+        '200':
+          description: 퀴즈 프리셋 데이터 전송
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      description: 프리셋 제목
+                    isPrivate:
+                      type: boolean
+                      description: 프리셋 비공개 여부
+                    thumbnailUrl:
+                      type: string
+                      description: 프리셋 썸네일 이미지 URL
+                    presetPin:
+                      type: string
+                      description: 프리셋 PIN
+                    hashtagList:
+                      type: array
+                      description: 해시태그 목록
+                      items:
+                        type: string
+                    quizList:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          imageUrl:
+                            type: string
+                            description: 퀴즈 이미지 URL
+                          answer:
+                            type: string
+                            description: 퀴즈 정답
+                          hint:
+                            type: string
+                            description: 퀴즈 힌트
+        '400':
+          description: 잘못된 요청 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/quiz/remove:
     delete:
       summary: 특정 PIN 에 해당되는 QuizPreset 삭제

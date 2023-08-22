@@ -21,7 +21,7 @@
       "@/services/*": ["src/services/*"],
       "@/utils/*": ["src/utils/*"],
       "@/validations/*": ["src/validations/*"],
-      "@/type/*": ["src/types/*"]
+      "@/types/*": ["src/types/*"]
     }
   },
   "include": ["src/**/*.ts"],
