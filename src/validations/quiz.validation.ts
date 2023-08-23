@@ -18,7 +18,7 @@ export const postCreateQuizPresetSchema = z.object({
         z.string().nullable().array().nonempty(),
       ]),
       title: z.string(),
-      isPrivate: z.boolean().optional(),
+      isPrivate: z.boolean().default(false).optional(),
       hashtagList: z.string().array().nonempty(),
     })
 });
@@ -46,7 +46,15 @@ export const getQuizPresetBySearchSchema = z.object({
     .merge(paginatedSchema),
 });
 
+export const deleteQuizPresetSchema = z.object({
+    query: z
+      .object({
+        presetPin: z.string(),
+      })
+  });
+
 export type GetQuizPresetList = z.infer<typeof getQuizPresetListSchema>;
 export type PostCreateQuizPreset = z.infer<typeof postCreateQuizPresetSchema>;
 export type GetQuizPreset = z.infer<typeof getQuizPresetSchema>;
 export type GetQuizPresetBySearch = z.infer<typeof getQuizPresetBySearchSchema>;
+export type DeleteQuizPreset = z.infer<typeof deleteQuizPresetSchema>;
