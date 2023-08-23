@@ -1,33 +1,39 @@
-import type { NextFunction, Request, Response } from 'express';
-import { z } from 'zod';
+import type { RequestHandler } from 'express';
+import { type ZodSchema } from 'zod';
 
-export type RequestSchema = z.ZodObject<{
-  params?: z.ZodObject<Record<string, z.ZodTypeAny>>;
-  query?: z.ZodObject<Record<string, z.ZodTypeAny>>;
-  body?: z.ZodObject<Record<string, z.ZodTypeAny>>;
+import { BadRequestError } from '@/utils/definedErrors';
+
+export type RequestValidation<ParamsType, QueryType, BodyType> = ZodSchema<{
+  params?: ParamsType;
+  query?: QueryType;
+  body?: BodyType;
 }>;
 
-const midValidate =
-  <T extends RequestSchema>(schema: T) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { params, body, query } = req;
-    const result = (await schema.safeParseAsync({
-      params,
-      body,
-      query,
-    })) as z.SafeParseReturnType<
-      T,
-      {
-        params?: Record<string, string>;
-        query?: Record<string, unknown>;
-        body?: Record<string, unknown> | Record<string, unknown>[];
-      }
-    >;
+export const midValidation: <
+  ParamsType = unknown,
+  QueryType = unknown,
+  BodyType = unknown,
+>(
+  schemas: RequestValidation<ParamsType, QueryType, BodyType>,
+) => RequestHandler<ParamsType, unknown, BodyType, QueryType> =
+  (schema) => (req, res, next) => {
+    const { body, params, query } = req;
+    const parsed = schema.safeParse({ body, params, query });
 
-    if (!result.success) return next(result.error);
-    if (result.data.body) req.body = result.data.body;
-    if (result.data.params) req.params = result.data.params;
-    if (result.data.query) res.locals = result.data.query;
+    if (parsed.success) {
+      const {
+        body: parsedBody,
+        params: parsedParams,
+        query: parsedQuery,
+      } = parsed.data;
+
+      if (parsedBody) req.body = parsedBody;
+      if (parsedParams) req.params = parsedParams;
+      if (parsedQuery) res.locals = parsedQuery;
+
+      return next();
+    }
+    throw new BadRequestError(parsed.error.message);
   };
 
-export default midValidate;
+export default midValidation;
