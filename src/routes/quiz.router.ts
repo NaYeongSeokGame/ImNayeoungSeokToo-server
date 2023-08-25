@@ -5,29 +5,43 @@ import upload from '@/middlewares/multer';
 import midResizeImage from '@/middlewares/resizeImage';
 import midValidation from '@/middlewares/validate';
 import { errorCatchHandler } from '@/utils/errorCatchHandler';
-import { getQuizPresetListSchema } from '@/validations/quiz.validation';
+import { quizPresetSchema } from '@/validations/quiz.validation';
 
 const quizRouter = express.Router();
 
 quizRouter.get(
   '/',
-  midValidation(getQuizPresetListSchema),
+  midValidation(quizPresetSchema.get),
   errorCatchHandler(QuizController.getQuizPreset),
 );
-quizRouter.get('/list', errorCatchHandler(QuizController.getQuizPresetList));
-quizRouter.get('/answer', errorCatchHandler(QuizController.getQuizAnswerList));
+
+quizRouter.get(
+  '/list',
+  midValidation(quizPresetSchema.getList),
+  errorCatchHandler(QuizController.getQuizPresetList),
+);
+
+quizRouter.get(
+  '/answer',
+  midValidation(quizPresetSchema.get),
+  errorCatchHandler(QuizController.getQuizAnswerList),
+);
+
 quizRouter.get(
   '/search',
+  midValidation(quizPresetSchema.getBySearch),
   errorCatchHandler(QuizController.getQuizPresetListBySearch),
 );
 
 quizRouter.delete(
   '/remove',
+  midValidation(quizPresetSchema.delete),
   errorCatchHandler(QuizController.deleteQuizPreset),
 );
 
 quizRouter.post(
   '/create',
+  midValidation(quizPresetSchema.postCreate),
   upload.array('images'),
   midResizeImage,
   errorCatchHandler(QuizController.postCreateQuizPreset),
