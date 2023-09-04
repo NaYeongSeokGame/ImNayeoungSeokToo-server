@@ -56,17 +56,17 @@ class QuizController {
   /**
    * 특정 프리셋 PIN 넘버의 퀴즈 정답 목록을 반환하는 함수 getQuizAnswerList
    */
-  static getQuizAnswerList: ValidatedRequestHandler<QuizPresetSchema['get']> =
+  static getQuizAnswerList: ValidatedRequestHandler<QuizPresetSchema['getAnswer']> =
     async (req, res) => {
       const { presetPin } = req.query;
 
       if (!presetPin)
         throw new BadRequestError('요청에 담긴 프리셋 PIN 이 없습니다.');
 
-      if (typeof presetPin !== 'string')
-        throw new BadRequestError('유효하지 않은 프리셋 PIN 번호입니다.');
-
       const answerList = await ModelQuiz.getQuizListInPreset(presetPin);
+
+      if (!answerList.length)
+        throw new BadRequestError('유효하지 않은 프리셋 PIN 번호입니다.');
 
       return res.status(200).json({ ...answerList });
     };

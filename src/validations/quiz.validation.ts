@@ -34,6 +34,11 @@ export const quizPresetSchema = {
   getList: z.object({
     query: paginatedSchema,
   }),
+  getAnswer: z.object({
+    query: z.object({
+      presetPin: z.string(),
+    })
+  }),
   getBySearch: z.object({
     query: z
       .object({
@@ -52,6 +57,7 @@ export const quizPresetSchema = {
 
 export type QuizPresetSchema = {
   get: z.infer<typeof quizPresetSchema.get>;
+  getAnswer: z.infer<typeof quizPresetSchema.getAnswer>;
   getList: z.infer<typeof quizPresetSchema.getList>;
   getBySearch: z.infer<typeof quizPresetSchema.getBySearch>;
   postCreate: z.infer<typeof quizPresetSchema.postCreate>;
