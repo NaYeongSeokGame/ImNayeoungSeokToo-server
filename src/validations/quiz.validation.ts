@@ -1,35 +1,30 @@
 import { z } from 'zod';
 
+
+
 import { paginatedSchema } from '@/validations/util.validation';
+
 
 export const quizPresetSchema = {
   postCreate: z.object({
-    body: z
-      .object({
-        answers: z.union([
-          z.string().min(3),
-          z.string().min(3).array().nonempty(),
-        ]),
-        hints: z.union([
-          z.string().nullable(),
-          z.string().nullable().array().nonempty(),
-        ]),
-        title: z.string(),
-        isPrivate: z.boolean().default(false).optional(),
-        hashtagList: z.string().array().nonempty(),
-      })
+    body: z.object({
+      answers: z.union([
+        z.string().min(3),
+        z.string().min(3).array().nonempty(),
+      ]),
+      hints: z.union([
+        z.string().nullable(),
+        z.string().nullable().array().nonempty(),
+      ]),
+      title: z.string(),
+      isPrivate: z.boolean().default(false).optional(),
+      hashtagList: z.string().array().nonempty(),
+    }),
   }),
   get: z.object({
-    query: z
-      .object({
-        presetPin: z.union([
-          z.string(),
-          z
-            .string()
-            .array()
-            .nonempty(),
-        ]),
-      }),
+    query: z.object({
+      presetPin: z.union([z.string(), z.string().array().nonempty()]),
+    }),
   }),
   getList: z.object({
     query: paginatedSchema,
@@ -37,7 +32,7 @@ export const quizPresetSchema = {
   getAnswer: z.object({
     query: z.object({
       presetPin: z.string(),
-    })
+    }),
   }),
   getBySearch: z.object({
     query: z
@@ -48,12 +43,11 @@ export const quizPresetSchema = {
       .merge(paginatedSchema),
   }),
   delete: z.object({
-    query: z
-      .object({
-        presetPin: z.string(),
-      })
+    query: z.object({
+      presetPin: z.string(),
+    }),
   }),
-}
+};
 
 export type QuizPresetSchema = {
   get: z.infer<typeof quizPresetSchema.get>;
@@ -62,4 +56,4 @@ export type QuizPresetSchema = {
   getBySearch: z.infer<typeof quizPresetSchema.getBySearch>;
   postCreate: z.infer<typeof quizPresetSchema.postCreate>;
   delete: z.infer<typeof quizPresetSchema.delete>;
-}
+};

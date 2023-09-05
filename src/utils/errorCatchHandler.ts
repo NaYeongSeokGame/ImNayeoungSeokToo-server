@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Response } from 'express';
-import { ValidatedRequestHandler, ValidationSchema, ValidatedRequest } from '@/types/util';
+
+import {
+  ValidatedRequest,
+  ValidatedRequestHandler,
+  ValidationSchema,
+} from '@/types/util';
 
 /**
  * 모든 오류를 catch() 처리하고 이를 next() 미들웨어에 전달하는 함수
