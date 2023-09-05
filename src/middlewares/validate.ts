@@ -33,7 +33,18 @@ export const midValidation: <
 
       return next();
     }
-    throw new BadRequestError(parsed.error.message);
+
+    const [
+      {
+        path: [errorSection, ...errorPath],
+      },
+    ] = parsed.error.issues;
+
+    throw new BadRequestError(
+      `${errorSection} - ${errorPath.join(
+        '.',
+      )} : 요청과 맞지 않는 값이 들어왔습니다.`,
+    );
   };
 
 export default midValidation;
