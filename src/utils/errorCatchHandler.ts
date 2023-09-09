@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction } from 'express';
 
-type WrapperFunc = (
-  req: Request<any, any, any, any>,
-  res: Response,
-  next: NextFunction,
-) => Promise<Response | void>;
+import type {
+  ValidatedRequest,
+  ValidatedRequestHandler,
+  ValidatedResponse,
+  ValidationSchema,
+} from '@/types/util';
 
 /**
  * 모든 오류를 catch() 처리하고 이를 next() 미들웨어에 전달하는 함수
@@ -15,7 +15,7 @@ type WrapperFunc = (
  */
 
 export const errorCatchHandler =
-  (fn: WrapperFunc) =>
-  (req: Request<any, any, any, any>, res: Response, next: NextFunction) => {
+  <T extends ValidationSchema>(fn: ValidatedRequestHandler<T>) =>
+  (req: ValidatedRequest<T>, res: ValidatedResponse<T>, next: NextFunction) => {
     return fn(req, res, next).catch(next);
   };
