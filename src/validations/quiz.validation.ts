@@ -1,9 +1,6 @@
 import { z } from 'zod';
 
-
-
 import { paginatedSchema } from '@/validations/util.validation';
-
 
 export const quizPresetSchema = {
   postCreate: z.object({

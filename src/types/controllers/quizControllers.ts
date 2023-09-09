@@ -23,12 +23,9 @@ export type GetQuizPresetBySearchReqQueryType = PaginatedType<{
   keyword: string;
 }>;
 
-
 export type PatchQuizPresetReqBodyType = {
   title?: string;
   isPrivate?: boolean;
   addHashtagList?: string[];
   removedHashtagList?: string[];
-  
-}
- 
+};
