@@ -29,7 +29,7 @@ export const midValidation: <
 
       if (parsedBody) req.body = parsedBody;
       if (parsedParams) req.params = parsedParams;
-      if (parsedQuery) res.locals = parsedQuery;
+      if (parsedQuery) res.locals.query = parsedQuery;
 
       return next();
     }

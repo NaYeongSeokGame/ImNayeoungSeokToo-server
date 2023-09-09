@@ -15,6 +15,11 @@ export interface RequestQuery {
     | RequestQuery[];
 }
 
+interface ResponseLocalQuery<T extends ValidationSchema> {
+  [key: string]: unknown;
+  query: T['query'];
+}
+
 export type ValidationSchema = {
   query?: RequestQuery;
   params?: ParamsDictionary;
@@ -28,8 +33,13 @@ export type ValidatedRequest<T extends ValidationSchema> = Request<
   T['query']
 >;
 
+export type ValidatedResponse<T extends ValidationSchema> = Response<
+  unknown,
+  ResponseLocalQuery<T>
+>;
+
 export type ValidatedRequestHandler<T extends ValidationSchema> = (
   req: ValidatedRequest<T>,
-  res: Response,
+  res: ValidatedResponse<T>,
   next: NextFunction,
 ) => Promise<Response>;

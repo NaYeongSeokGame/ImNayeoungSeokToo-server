@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextFunction, Response } from 'express';
+import { NextFunction } from 'express';
 
-import {
+import type {
   ValidatedRequest,
   ValidatedRequestHandler,
+  ValidatedResponse,
   ValidationSchema,
 } from '@/types/util';
 
@@ -16,6 +17,6 @@ import {
 
 export const errorCatchHandler =
   <T extends ValidationSchema>(fn: ValidatedRequestHandler<T>) =>
-  (req: ValidatedRequest<T>, res: Response, next: NextFunction) => {
+  (req: ValidatedRequest<T>, res: ValidatedResponse<T>, next: NextFunction) => {
     return fn(req, res, next).catch(next);
   };
