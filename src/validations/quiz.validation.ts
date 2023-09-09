@@ -17,7 +17,7 @@ export const quizPresetSchema = {
         z.string().nullable().array().nonempty(),
       ]),
       title: z.string(),
-      isPrivate: z.boolean().default(false).optional(),
+      isPrivate: z.coerce.boolean().default(false).optional(),
       hashtagList: z.string().array().nonempty(),
     }),
   }),
