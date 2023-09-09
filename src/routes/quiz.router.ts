@@ -47,4 +47,20 @@ quizRouter.post(
   errorCatchHandler(QuizController.postCreateQuizPreset),
 );
 
+quizRouter.patch(
+  '/modify',
+  upload.fields([
+    {
+      name: 'addQuizImages',
+      maxCount: 9,
+    },
+    {
+      name: 'modifiedQuizImages',
+      maxCount: 9,
+    },
+  ]),
+  midValidation(quizPresetSchema.patchModify),
+  errorCatchHandler(QuizController.patchModifyQuiz),
+);
+
 export default quizRouter;
