@@ -34,6 +34,60 @@ class ServiceQuiz {
           answer: currentIndexAnswer,
           includedPresetPin: presetPin,
           hint: currentIndexHint ? currentIndexHint : undefined,
+          sequence: index + 1,
+        });
+      }),
+    );
+  }
+
+  /**
+   * 기존의 퀴즈를 수정하는 함수 updateQuizWithImage
+   * @param param.sequence 수정하려는 퀴즈의 순서 목록
+   * @param param.answers 수정할 퀴즈의 정답 목록
+   * @param param.imageFiles 등록하고자 하는 퀴즈 이미지 Buffer
+   * @param param.presetPin 퀴즈 프리셋 PIN
+   * @param param.hints 수정하려는 퀴즈 프리셋 힌트
+   */
+  static async updateQuizWithImage({
+    sequences,
+    answers,
+    imageFiles,
+    presetPin,
+    hints,
+  }: {
+    sequences: number[];
+    answers: string[];
+    imageFiles: Express.Multer.File[];
+    presetPin: string;
+    hints: (string | null)[];
+  }) {
+    const removedQuizList = await ModelQuiz.getQuiz(
+      {
+        sequence: { $in: sequences },
+      },
+      { _id: 0, imageUrl: 1, sequence: 1 },
+    );
+
+    await Promise.all(
+      removedQuizList.map(async ({ imageUrl, sequence }) => {
+        await S3StorageModule.deleteFileFromS3(imageUrl);
+        await ModelQuiz.deleteQuiz({ sequence });
+      }),
+    );
+
+    await Promise.all(
+      imageFiles.map(async (imageFile, index) => {
+        const imageUrl = await S3StorageModule.uploadFileToS3({
+          fileData: imageFile,
+          presetPin,
+        });
+        const currentIndexAnswer = answers[index];
+        const currentIndexHint = hints[index];
+        await ModelQuiz.updateQuizPreset(presetPin, {
+          imageUrl,
+          answer: currentIndexAnswer,
+          includedPresetPin: presetPin,
+          hint: currentIndexHint ? currentIndexHint : undefined,
         });
       }),
     );

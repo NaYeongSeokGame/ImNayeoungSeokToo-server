@@ -1,3 +1,5 @@
+import type { FilterQuery, ProjectionType } from 'mongoose';
+
 import model from './model';
 import type { QuizType } from './model';
 
@@ -7,6 +9,8 @@ class ModelQuiz {
    * @param param.imageUrl S3에 등록된 이미지 url
    * @param param.answer 퀴즈의 정답
    * @param param.includedPresetPin 퀴즈가 소속된 프리셋의 pin
+   * @param param.hint 퀴즈의 힌트
+   * @param param.sequence 프리셋 내의 퀴즈의 등록 순서
    * @returns
    */
   static async createQuizPreset({
@@ -14,12 +18,14 @@ class ModelQuiz {
     answer,
     includedPresetPin,
     hint,
+    sequence,
   }: QuizType) {
     const createdQuizPresetDocs = await model.create({
       imageUrl,
       answer,
       includedPresetPin,
       hint,
+      sequence,
     });
     return createdQuizPresetDocs;
   }
@@ -76,6 +82,23 @@ class ModelQuiz {
    */
   static async deleteQuizInPreset(includedPresetPin: string) {
     await model.deleteMany({ includedPresetPin }).exec();
+  }
+
+  /**
+   * 주어진 조건에 맞는 Quiz 데이터 목록을 불러오는 함수 getQuiz
+   * @param query 가져오려는 Quiz 데이터에 부합하는 조건
+   */
+  static async getQuiz(query: FilterQuery<QuizType>, projection?: ProjectionType<QuizType>) {
+    const quizList = await model.find(query, projection).lean().exec();
+    return quizList;
+  }
+
+  /**
+   * 주어진 조건에 맞는 Quiz 데이터 목록을 삭제하는 함수 deleteQuiz
+   * @param query 삭제하려는 Quiz 데이터에 부합하는 조건
+   */
+  static async deleteQuiz(query: FilterQuery<QuizType>) {
+    await model.deleteMany(query).exec();
   }
 }
 

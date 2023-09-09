@@ -202,6 +202,64 @@ class QuizController {
 
       return res.sendStatus(200);
     };
+
+  static patchModifyQuiz: ValidatedRequestHandler<
+    QuizPresetSchema['patchModify']
+  > = async (req, res) => {
+    const {
+      presetPin,
+      addQuizList,
+      removedQuizList,
+      modifiedQuizList,
+      title,
+      isPrivate,
+    } = req.body;
+
+    const { addImageQuizList, modifiedImageQuizList } = req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+
+    await ModelQuizPreset.updateQuizPreset(presetPin, { title, isPrivate });
+
+    if (addQuizList.length) {
+      const answers = addQuizList.map(({ answer }) => answer);
+      const hints = addQuizList.map(({ hint }) => hint || null);
+
+      await ServiceQuiz.registerQuizWithImage({
+        answers: Array.isArray(answers) ? answers : [answers],
+        hints: Array.isArray(hints) ? hints : [hints],
+        imageFiles: addImageQuizList,
+        presetPin,
+      });
+    }
+
+    if (modifiedQuizList.length) {
+      const { answers, hints, sequences } = modifiedQuizList.reduce(
+        (prev, current) => {
+          return {
+            answers: [...prev.answers, current.answer],
+            hints: [...prev.hints, current.hint || null],
+            sequences: [...prev.sequences, current.sequence],
+          };
+        },
+        { answers: [], hints: [], sequences: [] } as {
+          answers: string[];
+          hints: (string | null)[];
+          sequences: number[];
+        },
+      );
+
+      await ServiceQuiz.updateQuizWithImage({
+        sequences,
+        answers,
+        hints,
+        imageFiles: modifiedImageQuizList,
+        presetPin,
+      });
+    }
+
+    return res.sendStatus(200);
+  };
 }
 
 export default QuizController;
