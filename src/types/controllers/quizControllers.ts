@@ -4,7 +4,7 @@ export type PostCreateQuizPresetReqBodyType = {
   answers: string[] | string;
   hints: (string | null)[] | (string | null);
   title: string;
-  isPrivate: boolean | undefined;
+  isPrivate?: boolean;
   hashtagList: string[];
 };
 
@@ -22,3 +22,10 @@ export type GetQuizPresetBySearchReqQueryType = PaginatedType<{
   type: 'title' | 'hashtag';
   keyword: string;
 }>;
+
+export type PatchQuizPresetReqBodyType = {
+  title?: string;
+  isPrivate?: boolean;
+  addHashtagList?: string[];
+  removedHashtagList?: string[];
+};

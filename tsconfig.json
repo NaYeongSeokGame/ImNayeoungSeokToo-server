@@ -10,18 +10,7 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
-      "@/configs/*": ["src/configs/*"],
-      "@/constants/*": ["src/constants/*"],
-      "@/docs/*": ["src/docs/*"],
-      "@/controllers/*": ["src/controllers/*"],
-      "@/middlewares/*": ["src/middlewares/*"],
-      "@/models/*": ["src/models/*"],
-      "@/modules/*": ["src/modules/*"],
-      "@/routes/*": ["src/routes/*"],
-      "@/services/*": ["src/services/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/validations/*": ["src/validations/*"],
-      "@/types/*": ["src/types/*"]
+      "@/*": ["src/*"],
     }
   },
   "include": ["src/**/*.ts"],
