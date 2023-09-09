@@ -12,10 +12,7 @@ class QuizController {
    */
   static getQuizPreset: ValidatedRequestHandler<QuizPresetSchema['get']> =
     async (req, res) => {
-      const { presetPin } = req.query;
-
-      if (!presetPin)
-        throw new BadRequestError('요청에 담긴 프리셋 PIN 이 없습니다.');
+      const { presetPin } = res.locals.query;
 
       if (typeof presetPin === 'string') {
         const presetData = await ModelQuizPreset.getQuizPresetById(presetPin);
@@ -59,7 +56,7 @@ class QuizController {
   static getQuizAnswerList: ValidatedRequestHandler<
     QuizPresetSchema['getAnswer']
   > = async (req, res) => {
-    const { presetPin } = req.query;
+    const { presetPin } = res.locals.query;
 
     if (!presetPin)
       throw new BadRequestError('요청에 담긴 프리셋 PIN 이 없습니다.');
@@ -77,7 +74,7 @@ class QuizController {
   static getQuizPresetList: ValidatedRequestHandler<
     QuizPresetSchema['getList']
   > = async (req, res) => {
-    const { page, limit } = req.query;
+    const { page, limit } = res.locals.query;
 
     if (Number.isNaN(page) || Number.isNaN(limit))
       throw new BadRequestError(
@@ -114,37 +111,24 @@ class QuizController {
   static getQuizPresetListBySearch: ValidatedRequestHandler<
     QuizPresetSchema['getBySearch']
   > = async (req, res) => {
-    const { page = '1', limit = '9', keyword, type } = req.query;
-    const [pageNum, limitNum] = [page, limit].map(Number);
+    const { page = 1, limit = 9, keyword, type } = res.locals.query;
 
-    if (typeof keyword !== 'string' || typeof type !== 'string') {
-      throw new BadRequestError(
-        '퀴즈 프리셋 검색 타입 및 키워드를 요청에 추가해주세요.',
-      );
-    }
-
-    if (Number.isNaN(pageNum) || Number.isNaN(limitNum))
-      throw new BadRequestError(
-        'page 혹은 limit 값은 반드시 유효한 숫자여야 합니다.',
-      );
-
-    if (pageNum <= 0 || limitNum <= 0)
-      throw new BadRequestError('page 및 limit 값은 반드시 양수여야 합니다.');
+    console.log(res.locals.query);
 
     switch (type) {
       case 'title': {
         const presetDataList = await ModelQuizPreset.getQuizPresetByTitle({
           title: keyword,
-          page: pageNum,
-          limit: limitNum,
+          page,
+          limit,
         });
         return res.status(200).json(presetDataList);
       }
       case 'hashtag': {
         const presetDataList = await ServiceHashtag.getQuizPresetByHashtag({
           content: keyword,
-          page: pageNum,
-          limit: limitNum,
+          page,
+          limit,
         });
         return res.status(200).json(presetDataList);
       }
@@ -166,11 +150,6 @@ class QuizController {
     if (!imageFiles || !imageFiles.length)
       throw new BadRequestError('요청으로 보낸 이미지 파일이 없습니다.');
 
-    if (Array.isArray(imageFiles) && imageFiles.length > 9)
-      throw new BadRequestError(
-        '하나의 프리셋에 퀴즈는 최대 9개까지 가능합니다.',
-      );
-
     const {
       isPrivate = false,
       title,
@@ -178,9 +157,6 @@ class QuizController {
       hints,
       hashtagList = [],
     } = req.body;
-
-    if (!title)
-      throw new BadRequestError('프리셋에 이름은 꼭 지어주셔야 합니다.');
 
     const presetPin = await ModelQuizPreset.generateQuizPresetPin();
 
@@ -210,10 +186,7 @@ class QuizController {
    */
   static deleteQuizPreset: ValidatedRequestHandler<QuizPresetSchema['delete']> =
     async (req, res) => {
-      const { presetPin } = req.query;
-
-      if (!presetPin)
-        throw new BadRequestError('요청에 프리셋 PIN 번호가 없습니다.');
+      const { presetPin } = res.locals.query;
 
       const quizList = await ModelQuiz.getQuizListInPreset(presetPin);
 
