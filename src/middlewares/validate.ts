@@ -37,13 +37,14 @@ export const midValidation: <
     const [
       {
         path: [errorSection, ...errorPath],
+        message: errorMessage,
       },
     ] = parsed.error.issues;
 
     throw new BadRequestError(
       `${errorSection} - ${errorPath.join(
         '.',
-      )} : 요청과 맞지 않는 값이 들어왔습니다.`,
+      )} : 요청이 올바르지 않습니다. (${errorMessage})`,
     );
   };
 
