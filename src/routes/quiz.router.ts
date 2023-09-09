@@ -41,8 +41,8 @@ quizRouter.delete(
 
 quizRouter.post(
   '/create',
-  midValidation(quizPresetSchema.postCreate),
   upload.array('images'),
+  midValidation(quizPresetSchema.postCreate),
   midResizeImage,
   errorCatchHandler(QuizController.postCreateQuizPreset),
 );
