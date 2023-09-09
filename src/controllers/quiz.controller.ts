@@ -113,8 +113,6 @@ class QuizController {
   > = async (req, res) => {
     const { page = 1, limit = 9, keyword, type } = res.locals.query;
 
-    console.log(res.locals.query);
-
     switch (type) {
       case 'title': {
         const presetDataList = await ModelQuizPreset.getQuizPresetByTitle({
