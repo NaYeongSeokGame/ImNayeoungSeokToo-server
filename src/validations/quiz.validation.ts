@@ -40,7 +40,7 @@ export const quizPresetSchema = {
     query: z
       .object({
         type: z.enum(['title', 'hashtag']),
-        keyword: presetPinSchema,
+        keyword: z.string().nonempty(),
       })
       .merge(paginatedSchema),
   }),
