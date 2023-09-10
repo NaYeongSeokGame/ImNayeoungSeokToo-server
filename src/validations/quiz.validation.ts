@@ -48,6 +48,24 @@ export const quizPresetSchema = {
       presetPin: presetPinSchema,
     }),
   }),
+  patchModify: z.object({
+    body: z.object({
+      addQuizAnswers: z.union([
+        z.string().min(3),
+        z.string().min(3).array().nonempty(),
+      ]).optional(),
+      addQuizHints: z.union([
+        z.string().nullable(),
+        z.string().nullable().array().nonempty(),
+      ]).optional(),
+      removedQuizIndexList: z.string().array().optional(),
+      addHashtagList: hashtagSchema.array().optional(),
+      removedHashtagList: hashtagSchema.array().optional(),
+      title: z.string().optional(),
+      isPrivate: z.coerce.boolean().optional(),
+      presetPin: presetPinSchema,
+    }),
+  }),
 };
 
 export type QuizPresetSchema = {
@@ -57,4 +75,5 @@ export type QuizPresetSchema = {
   getBySearch: z.infer<typeof quizPresetSchema.getBySearch>;
   postCreate: z.infer<typeof quizPresetSchema.postCreate>;
   delete: z.infer<typeof quizPresetSchema.delete>;
+  patchModify: z.infer<typeof quizPresetSchema.patchModify>;
 };
