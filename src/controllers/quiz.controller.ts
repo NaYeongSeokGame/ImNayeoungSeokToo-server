@@ -144,7 +144,7 @@ class QuizController {
       title,
       answers,
       hints,
-      hashtagList = [],
+      hashtagList,
     } = req.body;
 
     const presetPin = await ModelQuizPreset.generateQuizPresetPin();
@@ -162,10 +162,12 @@ class QuizController {
       presetPin,
     });
 
-    await ServiceHashtag.registerHashtagToPreset({
-      presetPin,
-      hashtagList: Array.isArray(hashtagList) ? hashtagList : [hashtagList],
-    });
+    if (hashtagList) {
+      await ServiceHashtag.registerHashtagToPreset({
+        presetPin,
+        hashtagList: Array.isArray(hashtagList) ? hashtagList : [hashtagList],
+      });
+    }
 
     return res.json({ presetPin });
   };
