@@ -314,7 +314,7 @@ paths:
                   type: array
                   items:
                     type: string
-                images:
+                addQuizImages:
                   required: true
                   description: 추가하려는 퀴즈 이미지 목록
                   type: array
