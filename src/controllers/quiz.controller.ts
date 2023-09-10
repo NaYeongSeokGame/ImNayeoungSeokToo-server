@@ -1,5 +1,6 @@
 import ModelQuiz from '@/models/quiz/quiz';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
+import ModelQuizPresetHashtag from '@/models/quizPresetHashtag/quizPresetHashtag';
 import ServiceHashtag from '@/services/hashtag.service';
 import ServiceQuiz from '@/services/quiz.service';
 import { type ValidatedRequestHandler } from '@/types/util';
@@ -76,23 +77,13 @@ class QuizController {
   > = async (req, res) => {
     const { page, limit } = res.locals.query;
 
-    if (Number.isNaN(page) || Number.isNaN(limit))
-      throw new BadRequestError(
-        'page 혹은 limit 값은 반드시 유효한 숫자여야 합니다.',
-      );
-
-    const [pageNum, limitNum] = [page, limit].map(Number);
-
-    if (pageNum <= 0 || limitNum <= 0)
-      throw new BadRequestError('page 및 limit 값은 반드시 양수여야 합니다.');
-
-    const presetDataList = await ModelQuizPreset.getQuizPreset({
-      page: pageNum,
-      limit: limitNum,
+    let presetDataList = await ModelQuizPreset.getQuizPreset({
+      page,
+      limit,
     });
 
     // NOTE : 프리셋 목록을 순회하며 해시태그 정보를 주입하는 로직
-    const presetPinWithHashTag = await Promise.all(
+    presetDataList = await Promise.all(
       presetDataList.map(async (presetData) => {
         const { presetPin } = presetData;
         const hashtagList = await ServiceHashtag.getHashtagListByPresetId(
@@ -102,7 +93,7 @@ class QuizController {
       }),
     );
 
-    return res.status(200).json(presetPinWithHashTag);
+    return res.status(200).json(presetDataList);
   };
 
   /**
@@ -173,7 +164,7 @@ class QuizController {
 
     await ServiceHashtag.registerHashtagToPreset({
       presetPin,
-      hashtagContentList: hashtagList,
+      hashtagList: Array.isArray(hashtagList) ? hashtagList : [hashtagList],
     });
 
     return res.json({ presetPin });
@@ -193,7 +184,7 @@ class QuizController {
 
       const imageUrlList = quizList.map(({ imageUrl }) => imageUrl);
 
-      await ServiceQuiz.deleteQuizPreset({
+      await ServiceQuiz.deleteQuizAllInPreset({
         imageUrls: imageUrlList,
         presetPin,
       });
@@ -208,53 +199,51 @@ class QuizController {
   > = async (req, res) => {
     const {
       presetPin,
-      addQuizList,
-      removedQuizList,
-      modifiedQuizList,
+      addQuizAnswers: answers,
+      addQuizHints: hints,
+      removedQuizIndexList,
+      addHashtagList,
+      removedHashtagList,
       title,
       isPrivate,
     } = req.body;
 
-    const { addImageQuizList, modifiedImageQuizList } = req.files as {
-      [fieldname: string]: Express.Multer.File[];
-    };
+    const imageFiles = req.files as Express.Multer.File[] | undefined;
 
-    await ModelQuizPreset.updateQuizPreset(presetPin, { title, isPrivate });
+    if (!imageFiles || !imageFiles.length)
+      throw new BadRequestError('요청으로 보낸 이미지 파일이 없습니다.');
 
-    if (addQuizList.length) {
-      const answers = addQuizList.map(({ answer }) => answer);
-      const hints = addQuizList.map(({ hint }) => hint || null);
+    if (title || isPrivate)
+      await ModelQuizPreset.updateQuizPreset(presetPin, { title, isPrivate });
 
+    // NOTE : 제거하려는 퀴즈를 먼저 없애고, 이후 새로운 퀴즈를 등록한다.
+    if (removedQuizIndexList?.length) {
+      await ServiceQuiz.deleteQuizByIndex({
+        presetPin,
+        quizIndexList: removedQuizIndexList,
+      });
+    }
+
+    if (answers?.length && hints?.length) {
       await ServiceQuiz.registerQuizWithImage({
         answers: Array.isArray(answers) ? answers : [answers],
         hints: Array.isArray(hints) ? hints : [hints],
-        imageFiles: addImageQuizList,
+        imageFiles,
         presetPin,
       });
     }
 
-    if (modifiedQuizList.length) {
-      const { answers, hints, sequences } = modifiedQuizList.reduce(
-        (prev, current) => {
-          return {
-            answers: [...prev.answers, current.answer],
-            hints: [...prev.hints, current.hint || null],
-            sequences: [...prev.sequences, current.sequence],
-          };
-        },
-        { answers: [], hints: [], sequences: [] } as {
-          answers: string[];
-          hints: (string | null)[];
-          sequences: number[];
-        },
-      );
-
-      await ServiceQuiz.updateQuizWithImage({
-        sequences,
-        answers,
-        hints,
-        imageFiles: modifiedImageQuizList,
+    // NOTE : 새롭게 추가된 해시태그를 먼저 등록하고, 이후 제거하려는 해시태그를 삭제한다.
+    if (addHashtagList?.length) {
+      await ServiceHashtag.registerHashtagToPreset({
         presetPin,
+        hashtagList: addHashtagList,
+      });
+    }
+
+    if (removedHashtagList?.length) {
+      await ModelQuizPresetHashtag.deleteMany({
+        contents: { $in: removedHashtagList },
       });
     }
 

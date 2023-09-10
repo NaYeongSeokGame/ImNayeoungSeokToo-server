@@ -19,7 +19,7 @@ export const quizPresetSchema = {
       ]),
       title: z.string(),
       isPrivate: z.coerce.boolean().default(false).optional(),
-      hashtagList: hashtagSchema.array().nonempty(),
+      hashtagList: hashtagSchema.array().optional(),
     }),
   }),
   get: z.object({
@@ -50,25 +50,19 @@ export const quizPresetSchema = {
   }),
   patchModify: z.object({
     body: z.object({
-      addQuizList: z
-        .object({
-          answer: z.string().min(3),
-          hint: z.string().optional(),
-          sequence: z.number().min(1),
-        })
-        .array(),
-      removedQuizList: z.string().array(),
-      modifiedQuizList: z
-        .object({
-          answer: z.string().min(3),
-          hint: z.string().optional(),
-          sequence: z.number().min(1),
-        })
-        .array(),
+      addQuizAnswers: z.union([
+        z.string().min(3),
+        z.string().min(3).array().nonempty(),
+      ]).optional(),
+      addQuizHints: z.union([
+        z.string().nullable(),
+        z.string().nullable().array().nonempty(),
+      ]).optional(),
+      removedQuizIndexList: z.string().array().optional(),
       addHashtagList: hashtagSchema.array().optional(),
       removedHashtagList: hashtagSchema.array().optional(),
       title: z.string().optional(),
-      isPrivate: z.boolean().optional(),
+      isPrivate: z.coerce.boolean().optional(),
       presetPin: presetPinSchema,
     }),
   }),

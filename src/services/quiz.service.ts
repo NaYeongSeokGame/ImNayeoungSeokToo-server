@@ -1,5 +1,6 @@
 import ModelQuiz from '@/models/quiz/quiz';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
+import ModelQuizPresetHashtag from '@/models/quizPresetHashtag/quizPresetHashtag';
 import S3StorageModule from '@/modules/s3Storage.module';
 
 class ServiceQuiz {
@@ -34,70 +35,47 @@ class ServiceQuiz {
           answer: currentIndexAnswer,
           includedPresetPin: presetPin,
           hint: currentIndexHint ? currentIndexHint : undefined,
-          sequence: index + 1,
         });
       }),
     );
   }
 
   /**
-   * 기존의 퀴즈를 수정하는 함수 updateQuizWithImage
-   * @param param.sequence 수정하려는 퀴즈의 순서 목록
-   * @param param.answers 수정할 퀴즈의 정답 목록
-   * @param param.imageFiles 등록하고자 하는 퀴즈 이미지 Buffer
-   * @param param.presetPin 퀴즈 프리셋 PIN
-   * @param param.hints 수정하려는 퀴즈 프리셋 힌트
+   * 특정 quizIndex 를 가진퀴즈를 일괄 제거하는 함수 deleteQuizByIndex
+   * @param param.presetPin 제거하려는 퀴즈가 소속된 프리셋 PIN
+   * @param param.quizIndexList 제거하려는 퀴즈의 quizIndex 목록
    */
-  static async updateQuizWithImage({
-    sequences,
-    answers,
-    imageFiles,
+  static async deleteQuizByIndex({
     presetPin,
-    hints,
+    quizIndexList,
   }: {
-    sequences: number[];
-    answers: string[];
-    imageFiles: Express.Multer.File[];
     presetPin: string;
-    hints: (string | null)[];
+    quizIndexList: string[];
   }) {
-    const removedQuizList = await ModelQuiz.getQuiz(
-      {
-        sequence: { $in: sequences },
-      },
-      { _id: 0, imageUrl: 1, sequence: 1 },
-    );
+    const removedImageUrls = (
+      await ModelQuiz.getQuiz(
+        { includedPresetPin: presetPin, quizIndex: { $in: quizIndexList } },
+        { imageUrl: 1 },
+      )
+    ).map(({ imageUrl }) => imageUrl);
+
+    await ModelQuiz.deleteQuiz({
+      includedPresetPin: presetPin,
+      quizIndex: { $in: quizIndexList },
+    });
 
     await Promise.all(
-      removedQuizList.map(async ({ imageUrl, sequence }) => {
+      removedImageUrls.map(async (imageUrl) => {
         await S3StorageModule.deleteFileFromS3(imageUrl);
-        await ModelQuiz.deleteQuiz({ sequence });
-      }),
-    );
-
-    await Promise.all(
-      imageFiles.map(async (imageFile, index) => {
-        const imageUrl = await S3StorageModule.uploadFileToS3({
-          fileData: imageFile,
-          presetPin,
-        });
-        const currentIndexAnswer = answers[index];
-        const currentIndexHint = hints[index];
-        await ModelQuiz.updateQuizPreset(presetPin, {
-          imageUrl,
-          answer: currentIndexAnswer,
-          includedPresetPin: presetPin,
-          hint: currentIndexHint ? currentIndexHint : undefined,
-        });
       }),
     );
   }
 
   /**
-   * 특정 퀴즈 프리셋과 관련 데이터들을 완전히 제거하는 함수 deleteQuizPreset
-   * @param param0
+   * 특정 퀴즈 프리셋과 관련 데이터들을 완전히 제거하는 함수 deleteQuizAllInPreset
+   * @param param.
    */
-  static async deleteQuizPreset({
+  static async deleteQuizAllInPreset({
     imageUrls,
     presetPin,
   }: {
@@ -110,6 +88,7 @@ class ServiceQuiz {
       }),
     );
 
+    await ModelQuizPresetHashtag.deleteMany({ presetPin });
     await ModelQuiz.deleteQuizInPreset(presetPin);
     await ModelQuizPreset.deleteQuizPreset(presetPin);
   }

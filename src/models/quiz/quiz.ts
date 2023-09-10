@@ -11,7 +11,6 @@ class ModelQuiz {
    * @param param.answer 퀴즈의 정답
    * @param param.includedPresetPin 퀴즈가 소속된 프리셋의 pin
    * @param param.hint 퀴즈의 힌트
-   * @param param.sequence 프리셋 내의 퀴즈의 등록 순서
    * @returns
    */
   static async createQuizPreset({
@@ -88,7 +87,10 @@ class ModelQuiz {
    * 주어진 조건에 맞는 Quiz 데이터 목록을 불러오는 함수 getQuiz
    * @param query 가져오려는 Quiz 데이터에 부합하는 조건
    */
-  static async getQuiz(query: FilterQuery<QuizType>, projection?: ProjectionType<QuizType>) {
+  static async getQuiz(
+    query: FilterQuery<QuizType>,
+    projection?: ProjectionType<QuizType>,
+  ) {
     const quizList = await model.find(query, projection).lean().exec();
     return quizList;
   }
