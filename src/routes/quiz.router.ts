@@ -49,16 +49,7 @@ quizRouter.post(
 
 quizRouter.patch(
   '/modify',
-  upload.fields([
-    {
-      name: 'addQuizImages',
-      maxCount: 9,
-    },
-    {
-      name: 'modifiedQuizImages',
-      maxCount: 9,
-    },
-  ]),
+  upload.array('addQuizImages'),
   midValidation(quizPresetSchema.patchModify),
   errorCatchHandler(QuizController.patchModifyQuiz),
 );
