@@ -1,4 +1,7 @@
+import type { FilterQuery, ProjectionType } from 'mongoose';
+
 import model from './model';
+import type { HashtagType } from './model';
 
 class ModelHashTag {
   /**
@@ -40,6 +43,26 @@ class ModelHashTag {
       .exec();
 
     return hashtagId?._id.toString() ?? null;
+  }
+
+  /**
+   * 주어진 조건에 맞는 해시태그 데이터를 불러오는 함수 find
+   * @param query 가져오려는 Quiz 데이터에 부합하는 조건
+   */
+  static async find(
+    query: FilterQuery<HashtagType>,
+    projection?: ProjectionType<HashtagType>,
+  ) {
+    const quizList = await model.find(query, projection).lean().exec();
+    return quizList;
+  }
+
+  /**
+   * 주어진 조건에 맞는 해시태그를 일괄 삭제하는 함수 deleteMany
+   * @param query 가져오려는 Quiz 데이터에 부합하는 조건
+   */
+  static async deleteMany(query: FilterQuery<HashtagType>) {
+    await model.deleteMany(query).exec();
   }
 }
 

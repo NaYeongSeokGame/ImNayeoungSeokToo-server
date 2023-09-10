@@ -47,4 +47,11 @@ quizRouter.post(
   errorCatchHandler(QuizController.postCreateQuizPreset),
 );
 
+quizRouter.patch(
+  '/modify',
+  upload.array('addQuizImages'),
+  midValidation(quizPresetSchema.patchModify),
+  errorCatchHandler(QuizController.patchModifyQuiz),
+);
+
 export default quizRouter;

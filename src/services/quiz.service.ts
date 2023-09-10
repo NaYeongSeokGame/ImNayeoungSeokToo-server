@@ -1,5 +1,6 @@
 import ModelQuiz from '@/models/quiz/quiz';
 import ModelQuizPreset from '@/models/quizPreset/quizPreset';
+import ModelQuizPresetHashtag from '@/models/quizPresetHashtag/quizPresetHashtag';
 import S3StorageModule from '@/modules/s3Storage.module';
 
 class ServiceQuiz {
@@ -40,10 +41,41 @@ class ServiceQuiz {
   }
 
   /**
-   * 특정 퀴즈 프리셋과 관련 데이터들을 완전히 제거하는 함수 deleteQuizPreset
-   * @param param0
+   * 특정 quizIndex 를 가진퀴즈를 일괄 제거하는 함수 deleteQuizByIndex
+   * @param param.presetPin 제거하려는 퀴즈가 소속된 프리셋 PIN
+   * @param param.quizIndexList 제거하려는 퀴즈의 quizIndex 목록
    */
-  static async deleteQuizPreset({
+  static async deleteQuizByIndex({
+    presetPin,
+    quizIndexList,
+  }: {
+    presetPin: string;
+    quizIndexList: string[];
+  }) {
+    const removedImageUrls = (
+      await ModelQuiz.getQuiz(
+        { includedPresetPin: presetPin, quizIndex: { $in: quizIndexList } },
+        { imageUrl: 1 },
+      )
+    ).map(({ imageUrl }) => imageUrl);
+
+    await ModelQuiz.deleteQuiz({
+      includedPresetPin: presetPin,
+      quizIndex: { $in: quizIndexList },
+    });
+
+    await Promise.all(
+      removedImageUrls.map(async (imageUrl) => {
+        await S3StorageModule.deleteFileFromS3(imageUrl);
+      }),
+    );
+  }
+
+  /**
+   * 특정 퀴즈 프리셋과 관련 데이터들을 완전히 제거하는 함수 deleteQuizAllInPreset
+   * @param param.
+   */
+  static async deleteQuizAllInPreset({
     imageUrls,
     presetPin,
   }: {
@@ -56,6 +88,7 @@ class ServiceQuiz {
       }),
     );
 
+    await ModelQuizPresetHashtag.deleteMany({ presetPin });
     await ModelQuiz.deleteQuizInPreset(presetPin);
     await ModelQuizPreset.deleteQuizPreset(presetPin);
   }

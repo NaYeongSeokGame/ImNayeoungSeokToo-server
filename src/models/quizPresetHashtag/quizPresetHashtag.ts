@@ -1,3 +1,5 @@
+import type { FilterQuery, ProjectionType } from 'mongoose';
+
 import { PaginatedType } from '@/types/util';
 
 import model from './model';
@@ -56,20 +58,23 @@ class ModelQuizPresetHashtag {
   }
 
   /**
-   * 프리셋에 등록되었던 해시태그를 삭제하는 함수 deleteHashtagIdsFromPreset
-   * @param param.hashtagId 프리셋에서 삭제하려는 Hashtag Id
-   * @param param.presetPin 해시태그를 수정하려는 프리셋 PIN
-   * @returns
+   * 주어진 조건에 맞는 해시태그 목록을 불러오는 함수 get
+   * @param query 가져오려는 Quiz 데이터에 부합하는 조건
    */
-  static async deleteHashtagIdsFromPreset({
-    hashtagId,
-    presetPin,
-  }: QuizPresetHashtagType) {
-    const hashtagIdList = await model
-      .deleteOne({ presetPin, hashtagId })
-      .lean()
-      .exec();
-    return hashtagIdList;
+  static async find(
+    query: FilterQuery<QuizPresetHashtagType>,
+    projection?: ProjectionType<QuizPresetHashtagType>,
+  ) {
+    const quizList = await model.find(query, projection).lean().exec();
+    return quizList;
+  }
+
+  /**
+   * 주어진 조건에 맞는 해시태그 목록을 일괄 삭제하는 함수 deleteMany
+   * @param query 가져오려는 Quiz 데이터에 부합하는 조건
+   */
+  static async deleteMany(query: FilterQuery<QuizPresetHashtagType>) {
+    await model.deleteMany(query).exec();
   }
 }
 

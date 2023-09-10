@@ -1,8 +1,8 @@
 import { type PipelineStage, Types } from 'mongoose';
+import { customAlphabet } from 'nanoid';
 
 import { type PaginatedType } from '@/types/util';
 import { BadRequestError } from '@/utils/definedErrors';
-import generatePin from '@/utils/generatePin';
 
 import model from './model';
 import { type QuizPresetType, type QuizPresetWithThumbnailType } from './model';
@@ -158,7 +158,7 @@ class ModelQuizPreset {
    * @returns 새롭게 생성된 PIN 넘버
    */
   static async generateQuizPresetPin(): Promise<string> {
-    const generatedPin = generatePin();
+    const generatedPin = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 6)();
     const isExist = await ModelQuizPreset.getQuizPresetById(generatedPin);
     return isExist ? await this.generateQuizPresetPin() : generatedPin;
   }

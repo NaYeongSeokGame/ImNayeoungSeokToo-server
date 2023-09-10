@@ -1,3 +1,6 @@
+import type { FilterQuery, ProjectionType } from 'mongoose';
+import { nanoid } from 'nanoid';
+
 import model from './model';
 import type { QuizType } from './model';
 
@@ -7,6 +10,7 @@ class ModelQuiz {
    * @param param.imageUrl S3에 등록된 이미지 url
    * @param param.answer 퀴즈의 정답
    * @param param.includedPresetPin 퀴즈가 소속된 프리셋의 pin
+   * @param param.hint 퀴즈의 힌트
    * @returns
    */
   static async createQuizPreset({
@@ -14,35 +18,36 @@ class ModelQuiz {
     answer,
     includedPresetPin,
     hint,
-  }: QuizType) {
+  }: Omit<QuizType, 'quizIndex'>) {
     const createdQuizPresetDocs = await model.create({
       imageUrl,
       answer,
       includedPresetPin,
       hint,
+      quizIndex: `quiz_${nanoid()}`,
     });
     return createdQuizPresetDocs;
   }
 
   /**
    * 기존의 퀴즈를 업데이트 하는 함수 updateQuizPreset
-   * @param _id 업데이트 하고자 하는 퀴즈의 _id field
+   * @param quizIndex 업데이트 하고자 하는 퀴즈의 quizIndex
    * @param updatedPreset 업데이트 할 퀴즈의 정보
    */
   static async updateQuizPreset(
-    _id: string,
+    quizIndex: string,
     updatedQuiz: Omit<Partial<QuizType>, '_id'>,
   ) {
-    await model.updateOne({ _id }, { $set: { ...updatedQuiz } }).exec();
+    await model.updateOne({ quizIndex }, { $set: { ...updatedQuiz } }).exec();
   }
 
   /**
    * 기존의 퀴즈를 새롭게 덮어씌우는 함수 replaceQuizPreset
-   * @param _id 교체하고자 하는 퀴즈의 _id
+   * @param quizIndex 교체하고자 하는 퀴즈의 quizIndex
    * @param replacedQuiz 교체될 새로운 퀴즈의 정보
    */
-  static async replaceQuizPreset(_id: string, replacedQuiz: QuizType) {
-    await model.replaceOne({ _id }, replacedQuiz);
+  static async replaceQuizPreset(quizIndex: string, replacedQuiz: QuizType) {
+    await model.replaceOne({ quizIndex }, replacedQuiz);
   }
 
   /**
@@ -76,6 +81,26 @@ class ModelQuiz {
    */
   static async deleteQuizInPreset(includedPresetPin: string) {
     await model.deleteMany({ includedPresetPin }).exec();
+  }
+
+  /**
+   * 주어진 조건에 맞는 Quiz 데이터 목록을 불러오는 함수 getQuiz
+   * @param query 가져오려는 Quiz 데이터에 부합하는 조건
+   */
+  static async getQuiz(
+    query: FilterQuery<QuizType>,
+    projection?: ProjectionType<QuizType>,
+  ) {
+    const quizList = await model.find(query, projection).lean().exec();
+    return quizList;
+  }
+
+  /**
+   * 주어진 조건에 맞는 Quiz 데이터 목록을 삭제하는 함수 deleteQuiz
+   * @param query 삭제하려는 Quiz 데이터에 부합하는 조건
+   */
+  static async deleteQuiz(query: FilterQuery<QuizType>) {
+    await model.deleteMany(query).exec();
   }
 }
 
