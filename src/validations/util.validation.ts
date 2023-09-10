@@ -8,3 +8,8 @@ export const paginatedSchema = z.object({
 export const hashtagSchema = z.string().min(3).max(10);
 
 export const presetPinSchema = z.string().regex(/[A-Z0-9]{6}/);
+
+export const transformBoolean = z
+  .enum(['true', 'false'])
+  .catch('false')
+  .transform((value) => value === 'true');

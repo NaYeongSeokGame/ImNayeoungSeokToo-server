@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  transformBoolean,
   hashtagSchema,
   paginatedSchema,
   presetPinSchema,
@@ -10,15 +11,15 @@ export const quizPresetSchema = {
   postCreate: z.object({
     body: z.object({
       answers: z.union([
-        z.string().min(3),
-        z.string().min(3).array().nonempty(),
+        z.string(),
+        z.string().array().nonempty(),
       ]),
       hints: z.union([
-        z.string().min(3).nullable(),
-        z.string().min(3).nullable().array().nonempty(),
+        z.string().nullable(),
+        z.string().nullable().array().nonempty(),
       ]),
       title: z.string().min(3),
-      isPrivate: z.coerce.boolean().default(false).optional(),
+      isPrivate: transformBoolean,
       hashtagList: z.union([hashtagSchema.array(), hashtagSchema]).optional(),
     }),
   }),
@@ -51,8 +52,8 @@ export const quizPresetSchema = {
   patchModify: z.object({
     body: z.object({
       addQuizAnswers: z.union([
-        z.string().min(3),
-        z.string().min(3).array().nonempty(),
+        z.string(),
+        z.string().array().nonempty(),
       ]).optional(),
       addQuizHints: z.union([
         z.string().nullable(),
@@ -62,7 +63,7 @@ export const quizPresetSchema = {
       addHashtagList: z.union([hashtagSchema.array(), hashtagSchema]).optional(),
       removedHashtagList: z.union([hashtagSchema.array(), hashtagSchema]).optional(),
       title: z.string().min(3).optional(),
-      isPrivate: z.coerce.boolean().default(false).optional(),
+      isPrivate: transformBoolean.optional(),
       presetPin: presetPinSchema,
     }),
   }),
