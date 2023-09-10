@@ -19,7 +19,7 @@ export const quizPresetSchema = {
       ]),
       title: z.string(),
       isPrivate: z.coerce.boolean().default(false).optional(),
-      hashtagList: hashtagSchema.array().nonempty().optional(),
+      hashtagList: hashtagSchema.array().optional(),
     }),
   }),
   get: z.object({
