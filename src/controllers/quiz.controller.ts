@@ -195,13 +195,13 @@ class QuizController {
   > = async (req, res) => {
     const {
       presetPin,
-      addQuizAnswers: answers,
-      addQuizHints: hints,
-      removedQuizIndexList,
-      addHashtagList,
-      removedHashtagList,
       title,
       isPrivate,
+      addQuizAnswers: answers,
+      addQuizHints: hints,
+      addHashtagList,
+      removedQuizIndexList,
+      removedHashtagList,
     } = req.body;
 
     const imageFiles = req.files as Express.Multer.File[] | undefined;
