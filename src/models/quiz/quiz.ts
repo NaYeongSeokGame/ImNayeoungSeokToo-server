@@ -1,4 +1,5 @@
 import type { FilterQuery, ProjectionType } from 'mongoose';
+import { nanoid } from 'nanoid';
 
 import model from './model';
 import type { QuizType } from './model';
@@ -18,37 +19,36 @@ class ModelQuiz {
     answer,
     includedPresetPin,
     hint,
-    sequence,
-  }: QuizType) {
+  }: Omit<QuizType, 'quizIndex'>) {
     const createdQuizPresetDocs = await model.create({
       imageUrl,
       answer,
       includedPresetPin,
       hint,
-      sequence,
+      quizIndex: `quiz_${nanoid()}`,
     });
     return createdQuizPresetDocs;
   }
 
   /**
    * 기존의 퀴즈를 업데이트 하는 함수 updateQuizPreset
-   * @param _id 업데이트 하고자 하는 퀴즈의 _id field
+   * @param quizIndex 업데이트 하고자 하는 퀴즈의 quizIndex
    * @param updatedPreset 업데이트 할 퀴즈의 정보
    */
   static async updateQuizPreset(
-    _id: string,
+    quizIndex: string,
     updatedQuiz: Omit<Partial<QuizType>, '_id'>,
   ) {
-    await model.updateOne({ _id }, { $set: { ...updatedQuiz } }).exec();
+    await model.updateOne({ quizIndex }, { $set: { ...updatedQuiz } }).exec();
   }
 
   /**
    * 기존의 퀴즈를 새롭게 덮어씌우는 함수 replaceQuizPreset
-   * @param _id 교체하고자 하는 퀴즈의 _id
+   * @param quizIndex 교체하고자 하는 퀴즈의 quizIndex
    * @param replacedQuiz 교체될 새로운 퀴즈의 정보
    */
-  static async replaceQuizPreset(_id: string, replacedQuiz: QuizType) {
-    await model.replaceOne({ _id }, replacedQuiz);
+  static async replaceQuizPreset(quizIndex: string, replacedQuiz: QuizType) {
+    await model.replaceOne({ quizIndex }, replacedQuiz);
   }
 
   /**
