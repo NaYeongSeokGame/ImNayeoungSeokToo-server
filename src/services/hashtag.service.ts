@@ -24,17 +24,17 @@ class ServiceHashtag {
   /**
    * 특정 퀴즈 프리셋에 새로운 해시태그를 등록시키는 함수 registerHashtagToPreset
    * @param param.presetPin 새로운 해시태그를 등록하려는 퀴즈 프리셋 PIN
-   * @param param.hashtagContentList 새롭게 등록하고자 하는 해시태그 목록
+   * @param param.hashtagList 새롭게 등록하고자 하는 해시태그 목록
    */
   static async registerHashtagToPreset({
     presetPin,
-    hashtagContentList,
+    hashtagList,
   }: {
     presetPin: string;
-    hashtagContentList: string[];
+    hashtagList: string[];
   }) {
     const hashtagIdList = await Promise.all(
-      hashtagContentList.map(async (hashtagContent) => {
+      hashtagList.map(async (hashtagContent) => {
         let hashtagId = await ModelHashTag.getHashtagIdByContent(
           hashtagContent,
         );

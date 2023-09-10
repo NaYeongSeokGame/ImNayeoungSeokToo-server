@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
-import { paginatedSchema } from '@/validations/util.validation';
+import {
+  hashtagSchema,
+  paginatedSchema,
+  presetPinSchema,
+} from '@/validations/util.validation';
 
 export const quizPresetSchema = {
   postCreate: z.object({
@@ -15,12 +19,12 @@ export const quizPresetSchema = {
       ]),
       title: z.string(),
       isPrivate: z.coerce.boolean().default(false).optional(),
-      hashtagList: z.string().array().nonempty(),
+      hashtagList: hashtagSchema.array().optional(),
     }),
   }),
   get: z.object({
     query: z.object({
-      presetPin: z.union([z.string(), z.string().array().nonempty()]),
+      presetPin: z.union([presetPinSchema, presetPinSchema.array().nonempty()]),
     }),
   }),
   getList: z.object({
@@ -28,20 +32,20 @@ export const quizPresetSchema = {
   }),
   getAnswer: z.object({
     query: z.object({
-      presetPin: z.string(),
+      presetPin: presetPinSchema,
     }),
   }),
   getBySearch: z.object({
     query: z
       .object({
         type: z.enum(['title', 'hashtag']),
-        keyword: z.string(),
+        keyword: presetPinSchema,
       })
       .merge(paginatedSchema),
   }),
   delete: z.object({
     query: z.object({
-      presetPin: z.string(),
+      presetPin: presetPinSchema,
     }),
   }),
 };
