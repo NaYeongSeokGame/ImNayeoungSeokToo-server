@@ -60,6 +60,9 @@ paths:
                         hint:
                           type: string
                           description: 퀴즈 힌트
+                        quizIndex:
+                          type: string
+                          description: 퀴즈 인덱스
         '400':
           description: 잘못된 요청 오류
           content:
@@ -132,6 +135,9 @@ paths:
                           hint:
                             type: string
                             description: 퀴즈 힌트
+                        quizIndex:
+                          type: string
+                          description: 퀴즈 인덱스
         '400':
           description: 잘못된 요청 오류
           content:
@@ -208,7 +214,7 @@ paths:
                   type: array
                   items:
                     type: file
-                hashtagContentList:
+                hashtagList:
                     type: array
                     description: 퀴즈 프리셋에 추가할 해시태그 목록
                     items:
@@ -276,8 +282,79 @@ paths:
                     presetPin:
                       type: string
                       description: 프리셋 PIN
-                    hashtagContentList:
+                    hashtagList:
                       type: array
-                      description: 퀴즈 프리셋에 추가할 해시태그 목록
+                      description: 해시태그 목록
                       items:
                         type: string
+  /api/v1/quiz/modify:
+    patch:
+      summary: Quiz Preset 내 퀴즈 수정
+      tags:
+        - Quiz
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  description: 변경하려는 퀴즈 프리셋 제목
+                  type: string
+                isPrivate:
+                  description: 퀴즈 프리셋 비공개 여부
+                  type: boolean
+                addQuizAnswers:
+                  description: 추가하려는 퀴즈 정답 목록
+                  type: array
+                  items:
+                    type: string
+                addQuizHints:
+                  description: 추가하려는 퀴즈 힌트 목록
+                  type: array
+                  items:
+                    type: string
+                images:
+                  required: true
+                  description: 추가하려는 퀴즈 이미지 목록
+                  type: array
+                  items:
+                    type: file
+                addHashtagList:
+                    type: array
+                    description: 새롭게 추가하려는 해시태그 목록
+                    items:
+                      type: string
+                removedHashtagList:
+                    type: array
+                    description: 프리셋에서 삭제하려는 해시태그 목록
+                    items:
+                      type: string
+                removedQuizIndexList:
+                    type: array
+                    description: 프리셋에서 삭제하려는 퀴즈 인덱스 목록
+                    items:
+                      type: string
+      responses:
+        '200':
+          description: 새롭게 생성된 프리셋 PIN
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  presetPin:
+                    type: string
+                    description: 프리셋 PIN
+        '400':
+          description: 잘못된 요청 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
