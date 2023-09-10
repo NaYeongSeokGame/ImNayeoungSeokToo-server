@@ -139,13 +139,7 @@ class QuizController {
     if (!imageFiles || !imageFiles.length)
       throw new BadRequestError('요청으로 보낸 이미지 파일이 없습니다.');
 
-    const {
-      isPrivate = false,
-      title,
-      answers,
-      hints,
-      hashtagList,
-    } = req.body;
+    const { isPrivate = false, title, answers, hints, hashtagList } = req.body;
 
     const presetPin = await ModelQuizPreset.generateQuizPresetPin();
 
@@ -236,16 +230,22 @@ class QuizController {
     }
 
     // NOTE : 새롭게 추가된 해시태그를 먼저 등록하고, 이후 제거하려는 해시태그를 삭제한다.
-    if (addHashtagList?.length) {
+    if (addHashtagList) {
       await ServiceHashtag.registerHashtagToPreset({
         presetPin,
-        hashtagList: addHashtagList,
+        hashtagList: Array.isArray(addHashtagList)
+          ? addHashtagList
+          : [addHashtagList],
       });
     }
 
-    if (removedHashtagList?.length) {
+    if (removedHashtagList) {
       await ModelQuizPresetHashtag.deleteMany({
-        contents: { $in: removedHashtagList },
+        contents: {
+          $in: Array.isArray(removedHashtagList)
+            ? removedHashtagList
+            : [removedHashtagList],
+        },
       });
     }
 
