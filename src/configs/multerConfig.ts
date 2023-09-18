@@ -6,7 +6,7 @@ type FileNameCallbackFunc = (error: Error | null, filename: string) => void;
 /**
  * 파일 갯수 제한 : 9개, 파일 당 사이즈 제한 : UNDER 10MB
  */
-const MAX_COUNT = 9;
+// const MAX_COUNT = 9;
 const MAX_SIZE = 1024 * 1024 * 10;
 
 /**
@@ -25,8 +25,7 @@ export const multerConfig: multer.Options = {
     },
   }),
   limits: {
-    fieldSize: MAX_SIZE,
-    fields: MAX_COUNT,
+    fileSize: MAX_SIZE,
   },
   // sharp 에서 지원하는 파일 확장자 (jpeg, png, webp, avif, tiff) 만 허용
   fileFilter: (req, file, callback) => {
